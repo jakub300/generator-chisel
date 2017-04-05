@@ -42,6 +42,10 @@ var Prompts = {
         name: 'ES2015 with Babel',
         value: 'has_babel',
         checked: false
+      }, {
+        name: 'Vue (requires Babel)',
+        value: 'has_vue',
+        checked: false
       }]
     }
   ],

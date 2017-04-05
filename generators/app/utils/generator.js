@@ -18,6 +18,9 @@ var Generator = {
   dotfiles: function () {
     helpers.copy.call(this, '.*', '', this.prompts);
     helpers.copy.call(this, 'gitignore', '.gitignore');
+    if(this.prompts.features.has_babel) {
+      helpers.copy.call(this, 'babelrc', '.babelrc');
+    }
     helpers.copy.call(this, 'assets/**/.*', 'src/assets/');
   },
 
@@ -49,6 +52,9 @@ var Generator = {
 
   stylesheets: function () {
     helpers.copy.call(this, 'styles/itcss/**/*', 'src/styles/', this.prompts);
+    if(this.prompts.features.has_vue) {
+      helpers.copy.call(this, 'styles/vue_gitignore', 'src/styles/components/vue/.gitignore', this.prompts);
+    }
   },
 
   javascripts: function () {

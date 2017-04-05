@@ -8,5 +8,6 @@
 @import 'generic/*';
 @import 'elements/*';
 @import 'objects/*';
-@import 'components/*';
+@import 'components/*';<% if(features.has_vue) { %>
+@import 'components/vue/*';<% } %>
 @import 'utilities/*';

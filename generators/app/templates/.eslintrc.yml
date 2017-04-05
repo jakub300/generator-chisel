@@ -29,3 +29,6 @@ env:
 parserOptions:
   sourceType: "module"
   ecmaVersion: 6<% } %>
+<% if (features.has_vue) {%>
+plugins:
+  - "vue"<% } %>
