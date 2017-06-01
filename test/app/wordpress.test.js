@@ -5,7 +5,7 @@ var helpers = require('yeoman-test');
 var assert = require('yeoman-assert');
 
 describe('Chisel Generator with WordPress', function () {
-  before(function (done) {
+  beforeAll(function (done) {
 
     helpers
       .run(path.join(__dirname, '../../generators/app'))

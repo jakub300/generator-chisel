@@ -6,7 +6,7 @@ var helpers = require('yeoman-test');
 var assert = require('yeoman-assert');
 
 describe('Chisel Generator with default options', function () {
-  before(function (done) {
+  beforeAll(function (done) {
 
     async.series([
       function (callback) {

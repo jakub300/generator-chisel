@@ -7,7 +7,7 @@ var assert = require('yeoman-assert');
 const FOUR_MINUTES = 240000;
 
 describe('Chisel Generator with WordPress (subgenerator, src inside theme)', function () {
-  before(function (done) {
+  beforeAll(function (done) {
     this.timeout(FOUR_MINUTES)
 
     // We skip those tests when running locally because they

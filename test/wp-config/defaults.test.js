@@ -8,7 +8,7 @@ var fs = require('fs');
 const TEN_SECONDS = 10000;
 
 describe('Chisel Generator with WordPress (wp-config subgenerator)', function () {
-  before(function (done) {
+  beforeAll(function (done) {
     this.timeout(TEN_SECONDS)
 
     // We skip those tests when running locally because they

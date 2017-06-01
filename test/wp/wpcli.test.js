@@ -12,7 +12,7 @@ const STDOUT = 0;
 describe('Chisel Generator with WordPress (subgenerator, WP-CLI integration)', function () {
   this.timeout(TEN_SECONDS)
 
-  before(function (done) {
+  beforeAll(function (done) {
     this.timeout(FOUR_MINUTES)
 
     // We skip those tests when running locally because they

@@ -9,17 +9,11 @@ const TEN_SECONDS = 10000;
 const FOUR_MINUTES = 240000;
 
 describe('Chisel Generator with WordPress (subgenerator, WP-CLI integration)', function () {
-  describe('Page subgenerator', function() {
-    this.timeout(TEN_SECONDS)
+  describe.skip('Page subgenerator', function() {
+    //this.timeout(TEN_SECONDS)
 
-    before(function (done) {
-      this.timeout(FOUR_MINUTES)
-
-      // We skip those tests when running locally because they
-      // require database at 127.0.0.1 with root user and no password.
-      if(!process.env.TRAVIS) {
-        this.skip(); return;
-      }
+    beforeAll(function (done) {
+      console.log('beforeall runs')
 
       async.series([
         function (callback) {
@@ -54,7 +48,7 @@ describe('Chisel Generator with WordPress (subgenerator, WP-CLI integration)', f
             .on('end', callback);
         }
       ], done)
-    });
+    }, FOUR_MINUTES);
 
     it('should generate Twig templates', function (done) {
       assert.file([

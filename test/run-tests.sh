@@ -4,7 +4,7 @@ set -e
 
 if [ "$TEST_VERSIONS" == "" ]; then
   eslint .
-  mocha test/**/*.test.js -b --reporter spec
+  jest test/page/wp.test.js --ci
 elif [ "$TEST_VERSIONS" == "generator" ]; then
   npm install  --quitet -g nsp npm-check > /dev/null
   npm shrinkwrap --dev
