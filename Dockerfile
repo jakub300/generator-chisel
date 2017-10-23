@@ -35,11 +35,11 @@ RUN (curl -o- https://raw.githubusercontent.com/creationix/nvm/v$NVM_VERSION/ins
   npm install -g /generator-chisel/generator-chisel.tgz && \
   npm cache clean --force && \
   mkdir bin && \
-  (echo '#!/usr/bin/env bash\n\nyo chisel "$@"' > ./bin/create) && \
-  (echo '#!/usr/bin/env bash\n\nnpm run build "$@"' > ./bin/build) && \
-  (echo '#!/usr/bin/env bash\n\nnpm run watch "$@"' > ./bin/watch) && \
-  (echo '#!/usr/bin/env bash\n\nnpm run dev "$@"' > ./bin/dev) && \
-  (echo '#!/usr/bin/env bash\n\nnpm run lint "$@"' > ./bin/lint) && \
+  (echo '#!/bin/bash -i\n\nyo chisel "$@"' > ./bin/create) && \
+  (echo '#!/bin/bash -i\n\nnpm run build "$@"' > ./bin/build) && \
+  (echo '#!/bin/bash -i\n\nnpm run watch "$@"' > ./bin/watch) && \
+  (echo '#!/bin/bash -i\n\nnpm run dev "$@"' > ./bin/dev) && \
+  (echo '#!/bin/bash -i\n\nnpm run lint "$@"' > ./bin/lint) && \
   chmod +x ./bin/* && \
   mkdir project
 
