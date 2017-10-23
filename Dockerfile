@@ -2,7 +2,7 @@ FROM node:8 as pack
 
 COPY . /generator-chisel
 WORKDIR /generator-chisel
-RUN npm pack && \
+RUN npm pack --unsafe-perm && \
   mv generator-chisel-*.tgz generator-chisel.tgz
 
 
