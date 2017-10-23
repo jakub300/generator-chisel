@@ -15,7 +15,7 @@ RUN groupadd --gid 1000 chisel \
   && useradd --uid 1000 --gid chisel --shell /bin/bash --create-home chisel
 
 RUN apt-get update && \
-  apt-get install -y php-cli curl mysql-client && \
+  apt-get install -y php-cli php-mysql curl mysql-client && \
   rm -rf /var/lib/apt/lists/* && \
   php -v && \
   mysql --version
