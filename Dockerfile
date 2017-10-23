@@ -46,4 +46,4 @@ RUN (curl -o- https://raw.githubusercontent.com/creationix/nvm/v$NVM_VERSION/ins
 ENV PATH "/home/chisel/bin:$PATH"
 WORKDIR /home/chisel/project
 EXPOSE 3000
-CMD ['tail', '-f', '/dev/null']
+CMD ["tail", "-f", "/dev/null"]
