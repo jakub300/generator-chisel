@@ -1,8 +1,11 @@
-FROM node:8 as pack
+FROM node:8-stretch as pack
 
 COPY . /generator-chisel
 WORKDIR /generator-chisel
-RUN npm pack --unsafe-perm && \
+RUN apt-get update && \
+  apt-get install -y php-cli && \
+  rm -rf /var/lib/apt/lists/* && \
+  npm pack --unsafe-perm && \
   mv generator-chisel-*.tgz generator-chisel.tgz
 
 
