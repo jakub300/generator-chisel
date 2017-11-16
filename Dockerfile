@@ -46,6 +46,8 @@ RUN (curl -o- https://raw.githubusercontent.com/creationix/nvm/v$NVM_VERSION/ins
   chmod +x ./bin/* && \
   mkdir project
 
+VOLUME /home/chisel/.cache/yarn /home/chisel/.npm/_cacache
+
 ENV PATH "/home/chisel/bin:$PATH"
 WORKDIR /home/chisel/project
 EXPOSE 3000
