@@ -43,11 +43,8 @@ RUN (curl -o- https://raw.githubusercontent.com/creationix/nvm/v$NVM_VERSION/ins
   npm install -g yarn yo && \
   yarn -v && \
   npm install -g /generator-chisel/generator-chisel.tgz && \
-  mkdir proxy && \
-  cd proxy && \
-  npm install http-proxy && \
-  (echo 'require("http-proxy").createProxyServer({changeOrigin:!0,autoRewrite:!0,wd:!0,target:"http://chisel-project/"}).listen(2999)' > ./proxy.js) && \
-  cd .. && \
+  mkdir -p /home/chisel/.cache/yarn && \
+  mkdir -p /home/chisel/.npm/_cacache && \
   npm cache clean --force && \
   mkdir bin && \
   (echo '#!/bin/bash -i\n\nyo chisel "$@"' > ./bin/create) && \
@@ -55,6 +52,7 @@ RUN (curl -o- https://raw.githubusercontent.com/creationix/nvm/v$NVM_VERSION/ins
   (echo '#!/bin/bash -i\n\nnpm run watch "$@"' > ./bin/watch) && \
   (echo '#!/bin/bash -i\n\nnpm run dev "$@"' > ./bin/dev) && \
   (echo '#!/bin/bash -i\n\nnpm run lint "$@"' > ./bin/lint) && \
+  (echo '#!/bin/bash -i\n\ntest -d wp && npx browser-sync start --port 3000 --proxy 'http://chisel-project/' --ws; tail -f /dev/null' > ./bin/proxy) && \
   chmod +x ./bin/* && \
   mkdir project
 
@@ -63,4 +61,4 @@ VOLUME /home/chisel/.cache/yarn /home/chisel/.npm/_cacache
 ENV PATH "/home/chisel/bin:$PATH"
 WORKDIR /home/chisel/project
 EXPOSE 3000
-CMD ["bash", "-ic", "node /home/chisel/proxy/proxy.js"]
+CMD ["proxy"]
