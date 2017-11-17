@@ -63,4 +63,4 @@ VOLUME /home/chisel/.cache/yarn /home/chisel/.npm/_cacache
 ENV PATH "/home/chisel/bin:$PATH"
 WORKDIR /home/chisel/project
 EXPOSE 3000
-CMD ["node", "/home/chisel/proxy/proxy.js"]
+CMD ["bash", "-ic", "node /home/chisel/proxy/proxy.js"]
