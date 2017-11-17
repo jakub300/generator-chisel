@@ -50,7 +50,7 @@ RUN (curl -o- https://raw.githubusercontent.com/creationix/nvm/v$NVM_VERSION/ins
   (echo '#!/bin/bash -i\n\nnpm run watch "$@"' > ./bin/watch) && \
   (echo '#!/bin/bash -i\n\nnpm run dev "$@"' > ./bin/dev) && \
   (echo '#!/bin/bash -i\n\nnpm run lint "$@"' > ./bin/lint) && \
-  (echo '#!/bin/bash -i\n\ntest -d wp && npx browser-sync start --port 3000 --proxy 'http://chisel-project/' --ws; tail -f /dev/null' > ./bin/proxy) && \
+  (echo '#!/bin/bash -i\n\ntest -d wp && npx browser-sync start --port 2999 --proxy 'http://chisel-project/' --ws; tail -f /dev/null' > ./bin/proxy) && \
   chmod +x ./bin/* && \
   mkdir -p /home/chisel/.cache/yarn && \
   mkdir -p /home/chisel/.npm/_cacache && \
