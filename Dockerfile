@@ -22,6 +22,12 @@ RUN apt-get update && \
 
 COPY --from=pack /generator-chisel/generator-chisel.tgz /generator-chisel/
 
+# Add Tini
+ENV TINI_VERSION v0.16.1
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+ENTRYPOINT ["/tini", "--"]
+
 USER chisel
 
 WORKDIR /home/chisel
@@ -48,12 +54,6 @@ RUN (curl -o- https://raw.githubusercontent.com/creationix/nvm/v$NVM_VERSION/ins
   mkdir project
 
 VOLUME /home/chisel/.cache/yarn /home/chisel/.npm/_cacache
-
-# Add Tini
-ENV TINI_VERSION v0.16.1
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-RUN chmod +x /tini
-ENTRYPOINT ["/tini", "--"]
 
 ENV PATH "/home/chisel/bin:$PATH"
 WORKDIR /home/chisel/project
