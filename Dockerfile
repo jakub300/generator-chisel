@@ -43,8 +43,6 @@ RUN (curl -o- https://raw.githubusercontent.com/creationix/nvm/v$NVM_VERSION/ins
   npm install -g yarn yo && \
   yarn -v && \
   npm install -g /generator-chisel/generator-chisel.tgz && \
-  mkdir -p /home/chisel/.cache/yarn && \
-  mkdir -p /home/chisel/.npm/_cacache && \
   npm cache clean --force && \
   mkdir bin && \
   (echo '#!/bin/bash -i\n\nyo chisel "$@"' > ./bin/create) && \
@@ -54,6 +52,8 @@ RUN (curl -o- https://raw.githubusercontent.com/creationix/nvm/v$NVM_VERSION/ins
   (echo '#!/bin/bash -i\n\nnpm run lint "$@"' > ./bin/lint) && \
   (echo '#!/bin/bash -i\n\ntest -d wp && npx browser-sync start --port 3000 --proxy 'http://chisel-project/' --ws; tail -f /dev/null' > ./bin/proxy) && \
   chmod +x ./bin/* && \
+  mkdir -p /home/chisel/.cache/yarn && \
+  mkdir -p /home/chisel/.npm/_cacache && \
   mkdir project
 
 VOLUME /home/chisel/.cache/yarn /home/chisel/.npm/_cacache
