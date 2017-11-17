@@ -48,6 +48,12 @@ RUN (curl -o- https://raw.githubusercontent.com/creationix/nvm/v$NVM_VERSION/ins
 
 VOLUME /home/chisel/.cache/yarn /home/chisel/.npm/_cacache
 
+# Add Tini
+ENV TINI_VERSION v0.16.1
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+ENTRYPOINT ["/tini", "--"]
+
 ENV PATH "/home/chisel/bin:$PATH"
 WORKDIR /home/chisel/project
 EXPOSE 3000
