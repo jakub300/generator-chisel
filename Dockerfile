@@ -35,6 +35,7 @@ RUN (curl -o- https://raw.githubusercontent.com/creationix/nvm/v$NVM_VERSION/ins
   . $NVM_DIR/nvm.sh && \
   nvm install $NODE_VERSION && \
   npm install -g yarn yo && \
+  yarn -v && \
   npm install -g /generator-chisel/generator-chisel.tgz && \
   npm cache clean --force && \
   mkdir bin && \
