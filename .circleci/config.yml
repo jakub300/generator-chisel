@@ -27,6 +27,10 @@ jobs:
     <<: *defaults
     docker:
       - image: circleci/node:8
+  build-v9:
+    <<: *defaults
+    docker:
+      - image: circleci/node:9
 
 workflows:
   version: 2
@@ -34,4 +38,5 @@ workflows:
     jobs:
       - build-v6
       - build-v8
+      - build-v9
 
