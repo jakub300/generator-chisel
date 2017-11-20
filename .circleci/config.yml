@@ -18,7 +18,7 @@ jobs:
           - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-
       - run: sudo apt-get install -y php5-cli php5-mysql mysql-client
-      - run: sudo npm install --silent -g yo
+      - run: sudo npm install -g yo
       - run: dockerize -wait tcp://localhost:3306 -timeout 1m
       - run: yarn install
       - save_cache:
@@ -30,16 +30,18 @@ jobs:
     <<: *defaults
     docker:
       - image: circleci/node:8
+      - image: circleci/mysql
   build-v9:
     <<: *defaults
     docker:
       - image: circleci/node:9
+      - image: circleci/mysql
 
 workflows:
   version: 2
   build:
     jobs:
       - build-v6
-#      - build-v8
-#      - build-v9
+      - build-v8
+      - build-v9
 
