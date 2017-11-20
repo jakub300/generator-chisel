@@ -68,7 +68,6 @@ jobs:
           path: generator-chisel.tgz
 
 
-
 workflows:
   version: 2
   build:
@@ -88,7 +87,6 @@ workflows:
             - build-v9
       - pack:
           requires:
-            - build-v6
-            - build-v8
-            - build-v9
+            - test-versions-generator
+            - test-versions-generated-project
 
