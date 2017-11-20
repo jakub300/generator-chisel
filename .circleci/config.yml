@@ -47,6 +47,7 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
+      - run: sudo apt-get install -y php5-cli
       - run: yarn test
     environment:
       TEST_VERSIONS: generator
