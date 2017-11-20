@@ -17,7 +17,7 @@ describe('Chisel Generator with WordPress (subgenerator, WP-CLI integration)', f
 
     // We skip those tests when running locally because they
     // require database at 127.0.0.1 with root user and no password.
-    if(!process.env.TRAVIS) {
+    if(!process.env.CI) {
       this.skip(); return;
     }
 
