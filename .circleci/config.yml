@@ -18,7 +18,13 @@ jobs:
           - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-
       - run: sudo apt-get install -y php5-cli php5-mysql mysql-client
-      - run: env
+      - run: npm install -g yo
+      - run:
+          name: install dockerize
+          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: v0.5.0
+      - run: dockerize -wait tcp://localhost:3306 -timeout 1m
       - run: yarn install
       - save_cache:
           paths:
