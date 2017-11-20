@@ -8,6 +8,7 @@ if [ "$TEST_VERSIONS" == "" ]; then
 elif [ "$TEST_VERSIONS" == "generator" ]; then
   sudo npm install --quiet -g nsp nsp-preprocessor-yarn npm-check > /dev/null
   nsp check --preprocessor yarn || (exit 0)
+  yarn
   npm-check -s || (exit 0)
 elif [ "$TEST_VERSIONS" == "generated_project" ]; then
   sudo npm install --quiet -g nsp nsp-preprocessor-yarn npm-check ejs > /dev/null
