@@ -66,6 +66,7 @@ jobs:
       - run: mv generator-chisel-*.tgz generator-chisel.tgz
       - store_artifacts:
           path: generator-chisel.tgz
+          destination: packaged
 
 
 workflows:
