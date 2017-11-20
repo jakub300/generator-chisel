@@ -14,8 +14,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys:
-          - v1-dependencies-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package.json" }}
+          key: v1-dependencies-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package.json" }}
       - run: sudo apt-get install -y php5-cli php5-mysql mysql-client
       - run: env
       - run: |
@@ -41,17 +40,32 @@ jobs:
     docker:
       - image: circleci/node:9
       - image: circleci/mysql
-  test-versions-generator:
-    <<: *defaults
+
+  test-versions-generator: &test-versions
+    docker:
+      - image: circleci/node:6
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run: yarn test
     environment:
       TEST_VERSIONS: generator
   test-versions-generated-project:
-    <<: *defaults
+    <<: *test-versions
     environment:
       TEST_VERSIONS: generated_project
-  # pack:
-  #   docker:
-  #     - image: circleci/node:6
+
+  pack:
+    docker:
+      - image: circleci/node:6
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run: sudo apt-get install -y php5-cli
+      - run: npm pack
+      - run: mv generator-chisel-*.tgz generator-chisel.tgz
+      - store_artifacts:
+          path: generator-chisel.tgz
 
 
 
@@ -68,6 +82,11 @@ workflows:
             - build-v8
             - build-v9
       - test-versions-generated-project:
+          requires:
+            - build-v6
+            - build-v8
+            - build-v9
+      - pack:
           requires:
             - build-v6
             - build-v8
