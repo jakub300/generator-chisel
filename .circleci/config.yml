@@ -34,6 +34,7 @@ jobs:
       - save_cache:
           paths:
             - node_modules
+            - test/generated_project/node_modules
           key: v1-dependencies-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package.json" }}
       - run: yarn test
   build-v7:
