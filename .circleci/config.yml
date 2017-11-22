@@ -15,7 +15,7 @@ jobs:
       - checkout
       - restore_cache:
           key: v1-dependencies-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package.json" }}
-      - run: sudo apt-get install -y php5-cli php5-mysql mysql-client
+      - run: sudo apt-get update && sudo apt-get install -y php5-cli php5-mysql mysql-client
       - run: |
           sudo npm install -g yo
           wget -P /tmp https://github.com/wp-premium/advanced-custom-fields-pro/archive/master.zip
