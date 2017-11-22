@@ -29,6 +29,11 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package.json" }}
       - run: yarn test
+  build-v7:
+    <<: *defaults
+    docker:
+      - image: circleci/node:7
+      - image: circleci/mysql
   build-v8:
     <<: *defaults
     docker:
@@ -74,16 +79,19 @@ workflows:
   build:
     jobs:
       - build-v6
+      - build-v7
       - build-v8
       - build-v9
       - test-versions-generator:
           requires:
             - build-v6
+            - build-v7
             - build-v8
             - build-v9
       - test-versions-generated-project:
           requires:
             - build-v6
+            - build-v7
             - build-v8
             - build-v9
       - pack:
