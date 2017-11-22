@@ -16,6 +16,13 @@ jobs:
       - restore_cache:
           key: v1-dependencies-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package.json" }}
       - run: sudo apt-get update && sudo apt-get install -y php5-cli php5-mysql mysql-client
+      - run:
+          name: Install dependencies required by Chrome Headless
+          command: >
+            sudo apt-get install gconf-service libasound2 libatk1.0-0 libcups2
+            libdbus-1-3 libgconf-2-4 libgtk-3-0 libnspr4 libxcomposite1
+            libxcursor1 libxi6 libxrandr2 libxss1 libxtst6 fonts-liberation
+            libappindicator1 libnss3 lsb-release xdg-utils wget
       - run: |
           sudo npm install -g yo
           wget -P /tmp https://github.com/wp-premium/advanced-custom-fields-pro/archive/master.zip
