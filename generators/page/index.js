@@ -148,7 +148,7 @@ module.exports = class extends Generator {
    */
   install() {
     if (!this.options['skip-build'] && this.configuration.projectType == 'fe') {
-      this.spawnCommand('gulp', ['build']);
+      this.spawnCommand('npm', ['run', 'build']);
     }
 
     this.log('All done!');
