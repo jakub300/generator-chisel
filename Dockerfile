@@ -32,33 +32,30 @@ USER chisel
 
 WORKDIR /home/chisel
 
-ENV NVM_VERSION 0.33.5
-ENV NVM_DIR /home/chisel/.nvm
-ENV NODE_VERSION 8
-ENV CHISEL_DOCKER 1
+ENV N_PREFIX="/home/chisel/n" PREFIX="/home/chisel/n" \
+    PATH="/home/chisel/n/bin:/home/chisel/bin:$PATH" \
+    N_VERSION=2.1.8 NODE_VERSION=8 CHISEL_DOCKER=1
 
-RUN (curl -o- https://raw.githubusercontent.com/creationix/nvm/v$NVM_VERSION/install.sh | bash) && \
-  . $NVM_DIR/nvm.sh && \
-  nvm install $NODE_VERSION && \
+RUN mkdir bin && \
+  (curl -L "https://unpkg.com/n@$N_VERSION/bin/n" > ./bin/n) && \
+  (echo '#!/bin/bash\n\nyo chisel "$@"' > ./bin/create) && \
+  (echo '#!/bin/bash\n\nnpm run build "$@"' > ./bin/build) && \
+  (echo '#!/bin/bash\n\nnpm run watch "$@"' > ./bin/watch) && \
+  (echo '#!/bin/bash\n\nnpm run dev "$@"' > ./bin/dev) && \
+  (echo '#!/bin/bash\n\nnpm run lint "$@"' > ./bin/lint) && \
+  (echo '#!/bin/bash\n\ntest -d wp && npx browser-sync start --port 2999 --proxy http://chisel-project/ --ws --no-ui; tail -f /dev/null' > ./bin/proxy) && \
+  chmod +x ./bin/* && \
+  n $NODE_VERSION && \
   npm install -g yarn yo && \
   yarn -v && \
   npm install -g /generator-chisel/generator-chisel.tgz && \
   npm cache clean --force && \
-  mkdir bin && \
-  (echo '#!/bin/bash -i\n\nyo chisel "$@"' > ./bin/create) && \
-  (echo '#!/bin/bash -i\n\nnpm run build "$@"' > ./bin/build) && \
-  (echo '#!/bin/bash -i\n\nnpm run watch "$@"' > ./bin/watch) && \
-  (echo '#!/bin/bash -i\n\nnpm run dev "$@"' > ./bin/dev) && \
-  (echo '#!/bin/bash -i\n\nnpm run lint "$@"' > ./bin/lint) && \
-  (echo '#!/bin/bash -i\n\ntest -d wp && npx browser-sync start --port 2999 --proxy 'http://chisel-project/' --ws; tail -f /dev/null' > ./bin/proxy) && \
-  chmod +x ./bin/* && \
   mkdir -p /home/chisel/.cache/yarn && \
   mkdir -p /home/chisel/.npm/_cacache && \
   mkdir project
 
 VOLUME /home/chisel/.cache/yarn /home/chisel/.npm/_cacache
 
-ENV PATH "/home/chisel/bin:$PATH"
 WORKDIR /home/chisel/project
-EXPOSE 3000
+EXPOSE 2999 3000
 CMD ["proxy"]
