@@ -63,5 +63,13 @@ module.exports = function helpers() {
         }
       );
     },
+    onlyWithSourceMap() {
+      return through.obj(function onlyWithSourceMap(file, enc, callback) {
+        if (file.contents.toString('utf8').includes('//# sourceMappingURL')) {
+          this.push(file);
+        }
+        callback();
+      });
+    },
   };
 };
