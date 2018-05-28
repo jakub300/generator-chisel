@@ -13,6 +13,7 @@ const chalk = require('chalk');
 const WP_CONFIG_UNIQUE_STRING_BYTES = 30;
 const STDOUT = 0;
 const STDERR = 1;
+const IS_DOCKER = process.env.CHISEL_DOCKER === '1';
 
 module.exports = class extends Generator {
 
@@ -45,7 +46,8 @@ module.exports = class extends Generator {
       }, {
         name: 'url',
         message: 'Enter URL:',
-        default: 'http://'+this.configuration.nameSlug+'.test/'
+        default: IS_DOCKER ? 'http://chisel-project/' : 'http://'+this.configuration.nameSlug+'.test/',
+        when: () => !IS_DOCKER,
       }, {
         name: 'adminUser',
         message: 'Enter admin user:',

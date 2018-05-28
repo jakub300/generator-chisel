@@ -5,6 +5,8 @@ var Generator = require('yeoman-generator'),
   async = require('async'),
   mysql = require('mysql');
 
+const IS_DOCKER = process.env.CHISEL_DOCKER === '1';
+
 module.exports = class extends Generator {
 
   constructor(args, opts) {
@@ -50,7 +52,22 @@ module.exports = class extends Generator {
       }
     ];
 
-    this.prompt(prompts).then((answers) => {
+    function prompt(prompts) {
+      if(IS_DOCKER) {
+        // eslint-disable-next-line no-undef
+        return Promise.resolve({
+          databaseHost: 'db',
+          databasePort: 3306,
+          databaseName: 'wordpress',
+          databaseUser: 'root',
+          databasePassword: '',
+        })
+      } else {
+        return this.prompt(prompts);
+      }
+    }
+
+    prompt(prompts).then((answers) => {
       this.prompts = answers;
       this.prompts['databaseHostPort'] = answers['databaseHost'] + ':' + answers['databasePort'];
       cb();
