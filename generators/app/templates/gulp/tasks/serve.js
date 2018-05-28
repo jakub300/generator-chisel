@@ -18,10 +18,11 @@ module.exports = function serveTask(
   });<% } %>
 
   gulp.task('serve', startTasks, () => {<% if(projectType == 'wp-with-fe') { %>
+    const isDocker = process.env.CHISEL_DOCKER === '1';
     const name = generatorConfig.nameSlug;
     const browserSyncConfig = {
       proxy: {
-        target: generatorConfig.proxyTarget || `${name}.test`,
+        target: generatorConfig.proxyTarget || (isDocker ? 'chisel-project' : `${name}.test`),
         reqHeaders: {
           'x-chisel-proxy': '1',
         },
