@@ -110,7 +110,7 @@ module.exports = class extends Generator {
     this.log(chalk.yellow('\nWORDPRESS SETUP\n'));
     this.prompt(prompts).then((answers) => {
       if(IS_DOCKER) {
-        prompts.url = 'http://chisel-project/';
+        answers.url = 'http://chisel-project/';
       }
       this.prompts = answers;
       done();
