@@ -10,7 +10,8 @@
   },
   "files": [
     "generators",
-    "helpers"
+    "helpers",
+    "docker"
   ],
   "main": "generators\\index.js",
   "keywords": [
