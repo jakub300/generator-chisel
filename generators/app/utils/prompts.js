@@ -16,6 +16,7 @@ const FIRST_LETTER = 0;
 const SECOND_LETTER = 1;
 const ONE_CHARACTER = 1;
 const CHISEL_VERSION_CHECK_TIMEOUT = 5000;
+const IS_DOCKER = process.env.CHISEL_DOCKER === '1';
 
 var Prompts = {
   questions: [
@@ -74,6 +75,10 @@ var Prompts = {
       message: 'Please enter author name:',
       default: () => {
         try {
+          if(IS_DOCKER) {
+            return undefined;
+          }
+
           var fullName = cp.execSync('git config user.name', {
             timeout: 2000
           });
