@@ -9,7 +9,7 @@ RUN apt-get update && \
   mv generator-chisel-*.tgz generator-chisel.tgz
 
 
-FROM ubuntu:17.04
+FROM ubuntu:18.04
 
 RUN groupadd --gid 1000 chisel \
   && useradd --uid 1000 --gid chisel --shell /bin/bash --create-home chisel
