@@ -50,3 +50,5 @@ npm-debug.log
 .vagrant
 dev-vhost.conf
 .yo-rc-local.json
+/docker-compose.override.yml
+/docker-database
