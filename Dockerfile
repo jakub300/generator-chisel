@@ -43,7 +43,8 @@ RUN mkdir bin && \
   (echo '#!/bin/bash\n\nnpm run watch "$@"' > ./bin/watch) && \
   (echo '#!/bin/bash\n\nnpm run dev "$@"' > ./bin/dev) && \
   (echo '#!/bin/bash\n\nnpm run lint "$@"' > ./bin/lint) && \
-  (echo '#!/bin/bash\n\ntest -d wp && npx browser-sync start --port 2999 --proxy http://chisel-project/ --ws --no-ui; tail -f /dev/null' > ./bin/proxy) && \
+#  (echo '#!/bin/bash\n\ntest -d wp && npx browser-sync start --port 2999 --proxy http://chisel-project/ --ws --no-ui; tail -f /dev/null' > ./bin/proxy) && \
+  (echo '#!/bin/bash\n\ntail -f /dev/null' > ./bin/proxy) && \
   chmod +x ./bin/* && \
   n $NODE_VERSION && \
   npm install -g yarn yo && \
