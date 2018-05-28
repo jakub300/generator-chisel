@@ -46,13 +46,17 @@ module.exports = class extends Generator {
       }, {
         name: 'url',
         message: 'Enter URL:',
-        default: IS_DOCKER ? 'http://chisel-project/' : 'http://'+this.configuration.nameSlug+'.test/',
+        default: 'http://'+this.configuration.nameSlug+'.test/',
         when: () => !IS_DOCKER,
       }, {
         name: 'adminUser',
         message: 'Enter admin user:',
         default: () => {
           try {
+            if(IS_DOCKER) {
+              return undefined;
+            }
+
             var fullName = cp.execSync('git config user.name', {
               timeout: 2000
             });
@@ -74,6 +78,10 @@ module.exports = class extends Generator {
         validate: (str) => /.+@.+/.test(str),
         default: () => {
           try {
+            if(IS_DOCKER) {
+              return undefined;
+            }
+
             var email = cp.execSync('git config user.email', {
               timeout: 2000
             });
@@ -101,6 +109,9 @@ module.exports = class extends Generator {
     var done = this.async();
     this.log(chalk.yellow('\nWORDPRESS SETUP\n'));
     this.prompt(prompts).then((answers) => {
+      if(IS_DOCKER) {
+        prompts.url = 'http://chisel-project/';
+      }
       this.prompts = answers;
       done();
     });
