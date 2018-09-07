@@ -5,6 +5,8 @@
       "files": [
         "gulpfile.js",
         "gulp/**/*.js",
+        "postcss.config.js",
+        "webpack.config.js",
         "webpack.chisel.config.js"
       ],
       "parserOptions": {
