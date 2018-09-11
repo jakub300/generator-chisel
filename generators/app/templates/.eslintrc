@@ -5,6 +5,7 @@
       "files": [
         "gulpfile.js",
         "gulp/**/*.js",
+        "build/**/*.js",
         "postcss.config.js",
         "webpack.config.js",
         "webpack.chisel.config.js"

@@ -11,6 +11,8 @@ const ManifestPlugin = require('webpack-manifest-plugin');
 const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
+const templates = require('./build/templates');
+
 function findEntries() {
   const files = glob.sync('./src/scripts/*.js');
   const entries = {};
@@ -38,6 +40,7 @@ module.exports = {
   node: false,
   module: {
     rules: [
+      { test: /\.twig$/, loader: templates.loader },
       { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' },
       {
         test: /\.scss$/,
@@ -67,6 +70,7 @@ module.exports = {
     ],
   },
   plugins: [
+    ...templates(),
     new webpack.HashedModuleIdsPlugin(),
     new MiniCssExtractPlugin({
       filename: 'styles/[name].[contenthash:10].min.css',

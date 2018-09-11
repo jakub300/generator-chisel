@@ -26,6 +26,7 @@ var Generator = {
     helpers.copy.call(this, 'webpack.chisel.config.js', 'webpack.chisel.config.js', this.prompts);
     helpers.copy.call(this, 'webpack.config.js', 'webpack.config.js', this.prompts);
     helpers.copy.call(this, 'postcss.config.js', 'postcss.config.js', this.prompts);
+    helpers.copy.call(this, 'build/**/*', 'build/', this.prompts);
   },
 
   gulpfiles: function () {
