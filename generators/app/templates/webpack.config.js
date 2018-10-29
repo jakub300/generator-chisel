@@ -13,11 +13,34 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const templates = require('./build/templates');
 
+const environment = process.env.NODE_ENV;
+
+if (environment !== 'production' && environment !== 'development') {
+  console.error('Environment must me set to either development or production');
+  process.exit(1);
+}
+
+const isDevelopment = environment === 'development';
+const resolve = p => path.resolve(__dirname, p);
+const config = require('./package.json').chisel;
+// const generatorConfig = require('./.yo-rc.json')['generator-chisel'].config;
+// const helpers = require('./gulp/helpers')(gulp, plugins, config);
+
+// try {
+//   // eslint-disable-next-line global-require, import/no-unresolved
+//   const generatorConfigLocal = require('./.yo-rc-local.json')[
+//     'generator-chisel'
+//   ].config;
+//   _.merge(generatorConfig, generatorConfigLocal);
+// } catch (e) {
+//   // Do nothing
+// }
+
 function findEntries() {
-  const files = glob.sync('./src/scripts/*.js');
+  const files = glob.sync(path.join(config.src.base, config.src.scriptsMain));
   const entries = {};
   files.forEach(file => {
-    const noSrc = path.relative('./src', file);
+    const noSrc = path.relative(config.src.base, file);
     const name = path.basename(file, path.extname(file));
     entries[name] = `./${noSrc}`;
   });
@@ -26,12 +49,17 @@ function findEntries() {
 }
 
 module.exports = {
-  context: path.resolve(__dirname, 'src'),
+  mode: isDevelopment ? 'development' : 'production',
+  watch: isDevelopment,
+  context: resolve(config.src.base),
   entry: findEntries(),
   output: {
-    filename: 'scripts/[name].[contenthash:10].js',
-    chunkFilename: '[name].[chunkhash].chunk.js',
-    path: path.resolve(__dirname, 'dist'),
+    filename: path.join(config.dest.scripts, '[name].[contenthash:10].js'),
+    chunkFilename: path.join(
+      config.dest.scripts,
+      '[name].[chunkhash].chunk.js',
+    ),
+    path: resolve(config.dest.base),
     publicPath: '../',
   },
   externals: {},
@@ -70,19 +98,27 @@ module.exports = {
     ],
   },
   plugins: [
-    ...templates(),
+    ...templates({ config }),
     new webpack.HashedModuleIdsPlugin(),
     new MiniCssExtractPlugin({
-      filename: 'styles/[name].[contenthash:10].min.css',
+      filename: path.join(
+        config.dest.styles,
+        '[name].[contenthash:10].min.css',
+      ),
     }),
     new CopyWebpackPlugin(
-      [{ from: 'assets/**/*', to: '[path][name].[hash:10].[ext]' }],
+      [{ from: config.src.assets, to: '[path][name].[hash:10].[ext]' }],
       {},
     ),
     new ManifestPlugin({
-      fileName: 'rev-manifest.json',
+      fileName: config.dest.revManifest,
       map(obj) {
         // console.log(obj.chunk.entryModule.rootModule.resource);
+        if (obj.path.indexOf('../') === 0) {
+          // eslint-disable-next-line no-param-reassign
+          obj.path = obj.path.substr(3);
+        }
+
         if (obj.isInitial) {
           // eslint-disable-next-line no-param-reassign
           obj.name = path.join(path.dirname(obj.path), obj.name);

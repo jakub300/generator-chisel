@@ -4,12 +4,12 @@
   "author": "<%= author %>",
   "description": "<%= nameSlug %>",
   "scripts": {
-    "build": "gulp build",
+    "build": "npm run lint && cross-env NODE_ENV=production webpack",
     "build-report": "gulp build && gulp report",
-    "dev": "gulp",
-    "lint": "gulp lint-js && gulp lint-css",
-    "start": "gulp",
-    "watch": "gulp"
+    "dev": "cross-env NODE_ENV=development webpack",
+    "lint": "exit 0; eslint .",
+    "start": "npm run dev",
+    "watch": "npm run dev"
   },
   "chisel": {
     "src": {
@@ -21,13 +21,7 @@
       "scriptsMain": "scripts/*.js",
       "styles": "styles/**/*",
       "stylesMain": "styles/*.scss",
-      "templatesBuild": [
-        "templates/*.{twig,html}"
-      ],
-      "templatesWatch": [
-        "templates/**/*.{twig,html}",
-        "data/**.json"
-      ],
+      "templatesMain": "templates/*.{twig,html}",
       "templatesPath": "templates/",
       "vendorBase": "scripts/vendor",
       "vendorConfig": "scripts/vendor.json"
@@ -50,6 +44,7 @@
     "babel-loader": "^8.0.0",
     "browser-sync": "^2.23.6",
     "copy-webpack-plugin": "^4.5.2",
+    "cross-env": "^5.2.0",
     "css-loader": "^1.0.0",
     "eslint": "^5.8.0",
     "eslint-config-chisel": "^2.0.0",
