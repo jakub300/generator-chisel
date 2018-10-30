@@ -62,6 +62,11 @@ module.exports = {
     path: resolve(config.dest.base),
     publicPath: '../',
   },
+  resolve: {
+    alias: {
+      '~': resolve(config.src.base),
+    },
+  },
   externals: {},
   devtool: 'source-map',
   // stats: { colors: true, modules: false },
