@@ -3,7 +3,7 @@
 <head>
   <meta charset="<% if (projectType == 'wp-with-fe') { %>{{site.charset}}<% } else { %>utf-8<% }%>" /><% if (projectType == 'fe') { %>
   <title>{{ pageName }} - <%= name %></title><% } %>
-  <link rel="stylesheet" property="stylesheet" href="{{ revisionedPath('styles/main.css') }}" type="text/css">
+  <link rel="stylesheet" property="stylesheet" href="{{ revisionedPath('styles/app.css') }}" type="text/css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script>document.querySelector('html').classList.remove('no-js');</script>
   {% if hasVendor() %}
@@ -18,7 +18,7 @@
       })();
     </script>
   {% endif %}
-  <script src="{{ revisionedPath('scripts/app.bundle.js') }}" defer></script>
+  <script src="{{ revisionedPath('scripts/app.js') }}" defer></script>
 <% if (projectType == 'wp-with-fe') { %><link rel="pingback" href="{{site.pingback_url}}" />
   {{function('wp_head')}}<% } %>
   {% block head %}

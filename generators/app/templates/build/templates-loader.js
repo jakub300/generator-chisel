@@ -8,6 +8,9 @@ const Twig = require('twig');
 
 Twig.cache(false);
 
+const assetRegex = /(---CHISEL-ASSET-PATH---[\d\w+/]*=*---)/;
+const assetPathRegex = /---CHISEL-ASSET-PATH---([\d\w+/]*=*)---/;
+
 module.exports = function templatesLoader(content) {
   this.cacheable();
   this.async();
@@ -44,8 +47,18 @@ module.exports = function templatesLoader(content) {
   })
     .renderAsync()
     .then(data => {
-      // console.log(data);
-      this.callback(null, `module.exports = ${JSON.stringify(data)}`);
+      const response = [];
+      data.split(assetRegex).forEach(part => {
+        const pathMatched = assetPathRegex.exec(part);
+        if (!pathMatched) {
+          response.push(JSON.stringify(part));
+          return;
+        }
+        const pathHash = pathMatched[1];
+        const assetPath = Buffer.from(pathHash, 'base64').toString('utf8');
+        response.push(`require(${JSON.stringify(assetPath)})`);
+      });
+      this.callback(null, `module.exports = ${response.join(' + ')}`);
     })
     .catch(e => {
       this.callback(e);

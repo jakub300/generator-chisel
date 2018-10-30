@@ -7,28 +7,25 @@ module.exports = function templateFunctions(data = {}) {
   const webpackManifestPath = path.join(
     data.config.dest.base,
     data.config.dest.scripts,
-    `manifest${!data.manifest ? '-dev' : ''}.json`
+    `manifest${!data.manifest ? '-dev' : ''}.json`,
   );
 
   return [
     {
       name: 'revisionedPath',
       func(fullPath) {
-        const pathToFile = path.basename(fullPath);
-        if (data.manifest) {
-          if (!data.manifest[pathToFile]) {
-            throw new Error(`File ${pathToFile} seems to not be revisioned`);
-          }
-          return path.join(path.dirname(fullPath), data.manifest[pathToFile]);
-        }
-
-        return fullPath;
+        const pathBase64 = Buffer.from(fullPath, 'utf8').toString('base64');
+        return `---CHISEL-REVISIONED-PATH---${pathBase64}---`;
       },
     },
     {
       name: 'assetPath',
       func(assetPath) {
-        return path.join(data.config.dest.assets, assetPath);
+        const pathBase64 = Buffer.from(
+          path.join('~', data.config.dest.assets, assetPath),
+          'utf8',
+        ).toString('base64');
+        return `---CHISEL-ASSET-PATH---${pathBase64}---`;
       },
     },
     {
@@ -57,8 +54,8 @@ module.exports = function templateFunctions(data = {}) {
             path.join(
               data.config.dest.base,
               data.config.dest.scripts,
-              'vendor.js'
-            )
+              'vendor.js',
+            ),
           );
         }
 

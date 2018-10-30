@@ -103,7 +103,6 @@ module.exports = {
     ],
   },
   plugins: [
-    ...templates({ config }),
     new webpack.HashedModuleIdsPlugin(),
     new MiniCssExtractPlugin({
       filename: path.join(
@@ -134,5 +133,6 @@ module.exports = {
     }),
     new UnminifiedWebpackPlugin({ postfix: 'full' }),
     new OptimizeCssAssetsPlugin({ assetNameRegExp: /\.min\.css$/ }),
+    ...templates({ config }),
   ],
 };
