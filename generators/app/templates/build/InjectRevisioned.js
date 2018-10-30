@@ -21,8 +21,6 @@ const revisionedPathRegex = /---CHISEL-REVISIONED-PATH---([\d\w+/]*=*)---/g;
 class InjectRevisioned {
   apply(compiler) {
     compiler.hooks.compilation.tap('InjectRevisioned', compilation => {
-      console.log('The compiler is starting a new compilation...');
-
       let chunksMap = {};
 
       compilation.hooks.htmlWebpackPluginAlterChunks.tap(
@@ -32,7 +30,10 @@ class InjectRevisioned {
           chunks.forEach(chunk => {
             chunk.files.forEach(file => {
               const ext = getFileType(file);
-              const name = path.join(path.dirname(file), `${chunk.id}.${ext}`);
+              const name = path.join(
+                path.dirname(file),
+                `${chunk.names[0]}.${ext}`,
+              );
               map[name] = file;
             });
           });
