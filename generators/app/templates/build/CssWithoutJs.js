@@ -8,6 +8,10 @@ class CssWithoutJs {
   apply(compiler) {
     compiler.hooks.compilation.tap('CssWithoutJs', compilation => {
       compilation.hooks.chunkAsset.tap('CssWithoutJs', (chunk, file) => {
+        if (!chunk.hasEntryModule()) {
+          return;
+        }
+
         const resources =
           typeof chunk.entryModule.resource === 'string'
             ? [chunk.entryModule.resource]
