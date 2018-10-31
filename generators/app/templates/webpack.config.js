@@ -10,8 +10,11 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 
 const templates = require('./build/templates');
+const Reloader = require('./build/Reloader');
+const CssWithoutJs = require('./build/CssWithoutJs');
 
 const environment = process.env.NODE_ENV;
 
@@ -37,9 +40,21 @@ const config = require('./package.json').chisel;
 // }
 
 function findEntries() {
-  const files = glob.sync(path.join(config.src.base, config.src.scriptsMain));
+  const filesStyles = glob.sync(
+    path.join(config.src.base, config.src.stylesMain),
+  );
+  const filesScripts = glob.sync(
+    path.join(config.src.base, config.src.scriptsMain),
+  );
   const entries = {};
-  files.forEach(file => {
+
+  filesStyles.forEach(file => {
+    const noSrc = path.relative(config.src.base, file);
+    const name = path.basename(file, path.extname(file));
+    entries[`${config.dest.styles}/${name}`] = [`./${noSrc}`];
+  });
+
+  filesScripts.forEach(file => {
     const noSrc = path.relative(config.src.base, file);
     const name = path.basename(file, path.extname(file));
     entries[name] = `./${noSrc}`;
@@ -54,13 +69,16 @@ module.exports = {
   context: resolve(config.src.base),
   entry: findEntries(),
   output: {
-    filename: path.join(config.dest.scripts, '[name].[contenthash:10].js'),
+    filename: path.join(
+      config.dest.scripts,
+      isDevelopment ? '[name].js' : '[name].[contenthash:10].js',
+    ),
     chunkFilename: path.join(
       config.dest.scripts,
       '[name].[chunkhash].chunk.js',
     ),
     path: resolve(config.dest.base),
-    publicPath: '../',
+    publicPath: '/dist/',
   },
   resolve: {
     alias: {
@@ -103,29 +121,36 @@ module.exports = {
     ],
   },
   plugins: [
-    new webpack.HashedModuleIdsPlugin(),
+    ...(isDevelopment ? [] : [new webpack.HashedModuleIdsPlugin()]),
     new MiniCssExtractPlugin({
-      filename: path.join(
-        config.dest.styles,
-        '[name].[contenthash:10].min.css',
-      ),
+      filename: isDevelopment
+        ? '[name].css'
+        : '[name].[contenthash:10].min.css',
     }),
     new CopyWebpackPlugin(
-      [{ from: config.src.assets, to: '[path][name].[hash:10].[ext]' }],
+      [{ from: config.src.assets, to: '[path][name].H[hash:10]H.[ext]' }],
       {},
     ),
     new ManifestPlugin({
       fileName: config.dest.revManifest,
       map(obj) {
         // console.log(obj.chunk.entryModule.rootModule.resource);
-        if (obj.path.indexOf('../') === 0) {
+        if (obj.path.startsWith('/dist/')) {
           // eslint-disable-next-line no-param-reassign
-          obj.path = obj.path.substr(3);
+          obj.path = obj.path.substr(6);
+        }
+
+        if (obj.name.startsWith('assets/')) {
+          // eslint-disable-next-line no-param-reassign
+          obj.name = obj.name.replace(/\.H[\da-f]+H\./, '.');
         }
 
         if (obj.isInitial) {
           // eslint-disable-next-line no-param-reassign
-          obj.name = path.join(path.dirname(obj.path), obj.name);
+          obj.name = path.join(
+            path.dirname(obj.path),
+            `${path.basename(obj.name)}`,
+          );
         }
 
         return obj;
@@ -134,5 +159,23 @@ module.exports = {
     new UnminifiedWebpackPlugin({ postfix: 'full' }),
     new OptimizeCssAssetsPlugin({ assetNameRegExp: /\.min\.css$/ }),
     ...templates({ config }),
+    new BrowserSyncPlugin(
+      {
+        server: './',
+        // proxy: {
+        //   target: generatorConfig.proxyTarget || `${name}.test`,
+        //   reqHeaders: {
+        //     'x-chisel-proxy': '1',
+        //   },
+        // },
+
+        ghostMode: false,
+        online: true,
+        open: false,
+      },
+      { reload: false },
+    ),
+    new Reloader(),
+    new CssWithoutJs(),
   ],
 };

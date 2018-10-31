@@ -32,7 +32,7 @@ class InjectRevisioned {
               const ext = getFileType(file);
               const name = path.join(
                 path.dirname(file),
-                `${chunk.names[0]}.${ext}`,
+                `${path.basename(chunk.names[0])}.${ext}`,
               );
               map[name] = file;
             });
