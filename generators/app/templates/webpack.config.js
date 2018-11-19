@@ -124,11 +124,12 @@ module.exports = {
         ],
       },
       {
-        test: /\.(png|jpe?g|gif|webp|svg|mp4|webm|ogg|mp3|wav|flac|aac|woff2?|eot|ttf|otf)(\?.*)?$/,
+        // test: /\.(png|jpe?g|gif|webp|svg|mp4|webm|ogg|mp3|wav|flac|aac|woff2?|eot|ttf|otf)(\?.*)?$/,
+        include: resolve('src/assets'),
         use: [
           {
             loader: 'file-loader',
-            options: { name: '[path][name].[hash:10].[ext]' },
+            options: { name: '[path][name].H[hash:10]H.[ext]' },
           },
         ],
       },
