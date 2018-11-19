@@ -28,7 +28,10 @@ module.exports = function templates({ config }) {
         }),
     );
 
-  return [...htmlPlugins, new InjectRevisioned()];
+    return [
+      ...htmlPlugins,
+      ...(htmlPlugins.length ? [new InjectRevisioned()] : []),
+    ];
 };
 
 module.exports.loader = require.resolve('./templates-loader');
