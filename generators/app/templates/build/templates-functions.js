@@ -63,9 +63,9 @@ module.exports = function templateFunctions(data = {}) {
       },
     },
     {
-      name: 'getScriptsPath',
+      name: 'getWebpackPublicPath',
       func() {
-        return 'scripts/';
+        return 'dist/';
       },
     },
     {

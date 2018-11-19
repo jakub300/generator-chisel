@@ -15,6 +15,7 @@ const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 const templates = require('./build/templates');
 const Reloader = require('./build/Reloader');
 const CssWithoutJs = require('./build/CssWithoutJs');
+const DynamicPublicPath = require('./build/DynamicPublicPath');
 
 const environment = process.env.NODE_ENV;
 
@@ -26,7 +27,7 @@ if (environment !== 'production' && environment !== 'development') {
 const isDevelopment = environment === 'development';
 const resolve = p => path.resolve(__dirname, p);
 const config = require('./package.json').chisel;
-// const generatorConfig = require('./.yo-rc.json')['generator-chisel'].config;
+const generatorConfig = require('./.yo-rc.json')['generator-chisel'].config;
 // const helpers = require('./gulp/helpers')(gulp, plugins, config);
 
 // try {
@@ -38,6 +39,10 @@ const config = require('./package.json').chisel;
 // } catch (e) {
 //   // Do nothing
 // }
+
+// TODO: WordPress things should be confitional during build time
+// eslint-disable-next-line import/order
+const isWordPress = require('fs').existsSync(resolve('wp'));
 
 function findEntries() {
   const filesStyles = glob.sync(
@@ -77,7 +82,16 @@ module.exports = {
       config.dest.scripts,
       '[name].[chunkhash].chunk.js',
     ),
-    path: resolve(config.dest.base),
+    path: resolve(
+      isWordPress
+        ? path.join(
+            config.dest.wordpress,
+            'wp-content/themes',
+            config.dest.wordpressTheme,
+            config.dest.base,
+          )
+        : config.dest.base,
+    ),
     publicPath: '/dist/',
   },
   resolve: {
@@ -133,6 +147,7 @@ module.exports = {
     ),
     new ManifestPlugin({
       fileName: config.dest.revManifest,
+      seed: {},
       map(obj) {
         // console.log(obj.chunk.entryModule.rootModule.resource);
         if (obj.path.startsWith('/dist/')) {
@@ -161,13 +176,18 @@ module.exports = {
     ...templates({ config }),
     new BrowserSyncPlugin(
       {
-        server: './',
-        // proxy: {
-        //   target: generatorConfig.proxyTarget || `${name}.test`,
-        //   reqHeaders: {
-        //     'x-chisel-proxy': '1',
-        //   },
-        // },
+        ...(isWordPress
+          ? {
+              proxy: {
+                target:
+                  generatorConfig.proxyTarget ||
+                  `${generatorConfig.nameSlug}.test`,
+                reqHeaders: {
+                  'x-chisel-proxy': '1',
+                },
+              },
+            }
+          : { server: './' }),
 
         ghostMode: false,
         online: true,
@@ -177,5 +197,6 @@ module.exports = {
     ),
     new Reloader(),
     new CssWithoutJs(),
+    new DynamicPublicPath(),
   ],
 };

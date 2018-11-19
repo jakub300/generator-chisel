@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="no-js" lang="en" prefix="og: http://ogp.me/ns#">
+<html class="no-js" lang="en" prefix="og: http://ogp.me/ns#" data-webpack-public-path="{{ getWebpackPublicPath() }}">
 <head>
   <meta charset="<% if (projectType == 'wp-with-fe') { %>{{site.charset}}<% } else { %>utf-8<% }%>" /><% if (projectType == 'fe') { %>
   <title>{{ pageName }} - <%= name %></title><% } %>
@@ -9,7 +9,7 @@
   {% if hasVendor() %}
     <script src="{{ revisionedPath('scripts/vendor.js') }}" defer></script>
   {% endif %}
-  {% if hasWebpackManifest() %}
+  {# {% if hasWebpackManifest() %}
     <script>
       (function() {
         var p = '{{ getScriptsPath() }}';
@@ -17,7 +17,7 @@
         Object.keys(wm).forEach(function(n){wm[n]=p+wm[n]});
       })();
     </script>
-  {% endif %}
+  {% endif %} #}
   <script src="{{ revisionedPath('scripts/app.js') }}" defer></script>
 <% if (projectType == 'wp-with-fe') { %><link rel="pingback" href="{{site.pingback_url}}" />
   {{function('wp_head')}}<% } %>

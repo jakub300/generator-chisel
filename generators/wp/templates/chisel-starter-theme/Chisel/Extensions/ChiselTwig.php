@@ -53,7 +53,7 @@ class ChiselTwig extends Twig {
 
 		$this->registerFunction(
 			$twig,
-			'getScriptsPath'
+			'getWebpackPublicPath'
 		);
 
 		$this->registerFunction(
@@ -92,29 +92,23 @@ class ChiselTwig extends Twig {
 	 * @return string
 	 */
 	public function revisionedPath( $asset ) {
-		$pathinfo = pathinfo( $asset );
+		$asset = trim( $asset, '/' );
 
 		if ( ! defined( 'CHISEL_DEV_ENV' ) ) {
 			$manifest = $this->getManifest();
-			if ( ! array_key_exists( $pathinfo['basename'], $manifest ) ) {
+			if ( ! array_key_exists( $asset, $manifest ) ) {
 				return 'FILE-NOT-REVISIONED';
 			}
 
-			return sprintf(
-				'%s/%s%s/%s',
-				get_template_directory_uri(),
-				\Chisel\Settings::DIST_PATH,
-				$pathinfo['dirname'],
-				$manifest[ $pathinfo['basename'] ]
-			);
-		} else {
-			return sprintf(
-				'%s/%s%s',
-				get_template_directory_uri(),
-				\Chisel\Settings::DIST_PATH,
-				trim( $asset, '/' )
-			);
+			$asset = $manifest[ $asset ];
 		}
+
+		return sprintf(
+			'%s/%s%s',
+			get_template_directory_uri(),
+			\Chisel\Settings::DIST_PATH,
+			$asset
+		);
 	}
 
 	/**
@@ -125,11 +119,21 @@ class ChiselTwig extends Twig {
 	 * @return string
 	 */
 	public function assetPath( $asset ) {
+		$manifest = $this->getManifest();
+		$asset = sprintf('%s%s',
+			\Chisel\Settings::ASSETS_DIR,
+			trim( $asset, '/' )
+		);
+
+		if ( ! array_key_exists( $asset, $manifest ) ) {
+			return 'ASSET-NOT-FOUND-IN-MANIFEST';
+		}
+
 		return sprintf(
 			'%s/%s%s',
 			get_template_directory_uri(),
-			\Chisel\Settings::ASSETS_PATH,
-			trim( $asset, '/' )
+			\Chisel\Settings::ASSETS_DIR,
+			$manifest[ $asset ]
 		);
 	}
 
@@ -190,15 +194,15 @@ class ChiselTwig extends Twig {
 	}
 
 	/**
-	 * Returns the real path of the scripts directory.
+	 * Returns the real path of the dist directory.
 	 *
 	 * @return string
 	 */
-	public function getScriptsPath() {
+	public function getWebpackPublicPath() {
 		return sprintf(
 			'%s/%s',
 			get_template_directory_uri(),
-			\Chisel\Settings::SCRIPTS_PATH
+			\Chisel\Settings::DIST_PATH
 		);
 	}
 

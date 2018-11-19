@@ -13,8 +13,7 @@ class Settings {
 	const WEBPACK_MANIFEST_PATH = 'dist/scripts/manifest.json';
 	const WEBPACK_MANIFEST_DEV_PATH = 'dist/scripts/manifest-dev.json';
 	const DIST_PATH = 'dist/';
-	const ASSETS_PATH = 'dist/assets/';
-	const SCRIPTS_PATH = 'dist/scripts/';
+	const ASSETS_DIR = 'assets/';
 	const TEMPLATES_DIR = 'templates';
 
 	private $extensions = array( 'ChiselTwig', 'Twig', 'Theme', 'DataType' );
