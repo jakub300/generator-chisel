@@ -13,7 +13,7 @@
   },
   "chisel": {
     "src": {
-      "assets": "assets/**/*",
+      "assets": "assets",
       "app": "scripts/app.js",
       "base": "src",
       "dataPath": "data/",
@@ -21,8 +21,7 @@
       "scriptsMain": "scripts/*.js",
       "styles": "styles/**/*",
       "stylesMain": "styles/*.scss",
-      "templatesMain": "templates/*.{twig,html}",
-      "templatesPath": "templates/",
+      "templatesMain": "templates/*.twig",
       "vendorBase": "scripts/vendor",
       "vendorConfig": "scripts/vendor.json"
     },
