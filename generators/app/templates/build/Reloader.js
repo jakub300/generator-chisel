@@ -1,5 +1,3 @@
-/* eslint-disable class-methods-use-this, no-param-reassign */
-
 'use strict';
 
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
@@ -23,6 +21,7 @@ class Reloader {
           cache[assetName] = source;
           return true;
         }
+        return false;
       });
       const changedWithoutMaps = changedAssetsNames.filter(
         assetName => !assetName.endsWith('.map'),

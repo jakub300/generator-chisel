@@ -1,5 +1,3 @@
-/* eslint-disable class-methods-use-this, no-param-reassign */
-
 'use strict';
 
 // Based on: https://github.com/fqborges/webpack-fix-style-only-entries/blob/0.0.4/index.js

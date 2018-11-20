@@ -1,5 +1,3 @@
-/* eslint-disable class-methods-use-this, no-param-reassign */
-
 'use strict';
 
 class DynamicPublicPath {

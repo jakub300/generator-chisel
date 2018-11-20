@@ -1,3 +1,6 @@
+'use strict';
+
+const path = require('path');
 const webpackMerge = require('webpack-merge');
 
 const environment = process.env.NODE_ENV;
@@ -26,9 +29,21 @@ const generatorConfig = require('./.yo-rc.json')['generator-chisel'].config;
 // TODO: WordPress things should be confitional during build time
 // eslint-disable-next-line import/order
 const isWordPress = require('fs').existsSync(resolve('wp'));
-const params = {config, generatorConfig, isDevelopment, resolve};
+
+const params = {
+  config,
+  generatorConfig,
+  isDevelopment,
+  resolve,
+  isWordPress,
+  assetsPath: resolve(path.join(config.src.base, config.src.assets)),
+};
 
 module.exports = webpackMerge(
   require('./build/base.js')(params),
-  require(isWordPress ? './build/wordpress' : './build/static-frontend')(params),
+  require(isWordPress ? './build/wordpress' : './build/static-frontend')(
+    params,
+  ),
 );
+
+debugger;

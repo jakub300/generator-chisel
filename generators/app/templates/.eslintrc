@@ -16,11 +16,11 @@
       "rules": {
         "import/no-extraneous-dependencies": [
           "error",
-          {
-            "devDependencies": true
-          }
+          { "devDependencies": true }
         ],
-        "no-console": "off"
+        "no-console": "off",
+        "class-methods-use-this": "off",
+        "no-param-reassign": "off"
       },
       "env": {
         "node": true

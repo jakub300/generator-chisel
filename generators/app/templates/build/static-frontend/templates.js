@@ -18,20 +18,29 @@ module.exports = function templates({ config }) {
   addTwigFunctions(config);
 
   const htmlPlugins = glob
-    .sync(path.resolve(__dirname, '../src/templates/*.twig'))
+    .sync(
+      path.resolve(
+        __dirname,
+        '../..',
+        path.join(config.src.base, config.src.templatesMain),
+      ),
+    )
     .map(
       file =>
         new HtmlWebpackPlugin({
           filename: `${path.basename(file, path.extname(file))}.html`,
-          template: path.relative(path.resolve(__dirname, '../src'), file),
+          template: path.relative(
+            path.resolve(__dirname, '../..', config.src.base),
+            file,
+          ),
           inject: false,
         }),
     );
 
-    return [
-      ...htmlPlugins,
-      ...(htmlPlugins.length ? [new InjectRevisioned()] : []),
-    ];
+  return [
+    ...htmlPlugins,
+    ...(htmlPlugins.length ? [new InjectRevisioned()] : []),
+  ];
 };
 
 module.exports.loader = require.resolve('./templates-loader');
