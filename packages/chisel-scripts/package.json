@@ -1,0 +1,38 @@
+{
+  "name": "chisel-scripts",
+  "version": "0.0.0",
+  "description": "TODO",
+  "bin": {
+    "chisel-scripts": "bin/chisel-scripts.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xfiveco/generator-chisel.git",
+    "directory": "packages/chisel-scripts"
+  },
+  "author": {
+    "name": "Xfive",
+    "email": "hello@xfive.co",
+    "url": "https://www.xfive.co"
+  },
+  "homepage": "https://www.getchisel.co/",
+  "license": "MIT",
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/xfiveco/generator-chisel/issues"
+  },
+  "engines": {
+    "node": ">=10"
+  },
+  "dependencies": {
+    "case-sensitive-paths-webpack-plugin": "^2.2.0",
+    "chisel-shared-utils": "file:../chisel-shared-utils",
+    "file-loader": "^5.0.2",
+    "minimist": "^1.2.0",
+    "webpack": "^5.0.0-beta.11",
+    "webpack-chain": "^6.3.0",
+    "webpack-merge": "^4.2.2"
+  }
+}
