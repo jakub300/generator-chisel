@@ -26,7 +26,9 @@ module.exports = (api, options) => {
         path
           .join(baseDir, projectOptions.source.scripts, '*.js')
           .replace(/\\/g, '/'),
-        path.join(baseDir, projectOptions.source.styles, '*.scss').replace(/\\/g, '/'),
+        path
+          .join(baseDir, projectOptions.source.styles, '*.scss')
+          .replace(/\\/g, '/'),
       ])
     )
       .map((p) => path.relative(api.service.context, p))
@@ -39,12 +41,11 @@ module.exports = (api, options) => {
         webpackConfig.entry(`${outDir}/${base}`).add(`./${p}`).end();
       });
 
-    const fileName = `[name]${isProd ? '.[contenthash:8]' : ''}.js`;
-
+    const outScriptsDir = projectOptions.output.scripts;
     webpackConfig.output
       .path(api.resolve(projectOptions.output.base))
-      .filename(fileName)
-      .chunkFilename(`${projectOptions.output.scripts}/${fileName}`);
+      .filename(`[name]${isProd ? '.[contenthash:8]' : ''}.js`)
+      .chunkFilename(`${outScriptsDir}/[id].js`);
 
     // prettier-ignore
     webpackConfig.resolve
@@ -62,9 +63,38 @@ module.exports = (api, options) => {
         .add('node_modules')
         .add(api.resolve('node_modules'))
 
-    // prettier-ignore
     webpackConfig
       .plugin('case-sensitive-paths')
-        .use(require('case-sensitive-paths-webpack-plugin'))
+      .use(require('case-sensitive-paths-webpack-plugin'));
+
+    webpackConfig
+      .plugin('chisel-dynamic-public-path')
+      .use(require('../webpack-plugins/DynamicPublicPath'));
+
+    if (isProd) {
+      // keep chunk ids stable so async chunks have consistent hash (#1916)
+      webpackConfig
+        .plugin('named-chunks')
+        .use(require('webpack/lib/NamedChunksPlugin'), [
+          (chunk) => {
+            if (chunk.name) {
+              return chunk.name;
+            }
+
+            const hash = require('hash-sum');
+            const joinedHash = hash(
+              Array.from(chunk.modulesIterable, (m) => m.id).join('_')
+            );
+            return `chunk-` + joinedHash;
+          },
+        ]);
+
+      // keep module.id stable when vendor modules does not change
+      webpackConfig
+        .plugin('hash-module-ids')
+        .use(require('webpack/lib/HashedModuleIdsPlugin'), [
+          { hashDigest: 'hex' },
+        ]);
+    }
   });
 };
