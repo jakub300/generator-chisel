@@ -27,12 +27,18 @@
     "node": ">=10"
   },
   "dependencies": {
-    "case-sensitive-paths-webpack-plugin": "^2.2.0",
+    "case-sensitive-paths-webpack-plugin": "^2.3.0",
     "chisel-shared-utils": "file:../chisel-shared-utils",
-    "file-loader": "^5.0.2",
-    "minimist": "^1.2.0",
-    "webpack": "^5.0.0-beta.11",
-    "webpack-chain": "^6.3.0",
+    "css-loader": "^3.5.3",
+    "file-loader": "^6.0.0",
+    "globby": "^11.0.1",
+    "mini-css-extract-plugin": "^0.9.0",
+    "minimist": "^1.2.5",
+    "node-sass": "^4.14.1",
+    "sass-loader": "^8.0.2",
+    "webpack": "^4.43.0",
+    "webpack-chain": "^6.4.0",
+    "webpack-fix-style-only-entries": "^0.5.0",
     "webpack-merge": "^4.2.2"
   }
 }

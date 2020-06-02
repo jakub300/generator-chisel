@@ -1,3 +1,5 @@
+const path = require('path');
+
 // Based on https://github.com/vuejs/vue-cli/blob/80b93951b1710733a66765cbd535b12b7bb59279/packages/%40vue/cli-service/lib/PluginAPI.js
 
 module.exports =class PluginAPI {
@@ -50,5 +52,15 @@ module.exports =class PluginAPI {
    */
   configureWebpack (fn) {
     this.service.webpackRawConfigFns.push(fn)
+  }
+
+  /**
+   * Resolve path for a project.
+   *
+   * @param {string} _path - Relative path from project root
+   * @return {string} The resolved absolute path.
+   */
+  resolve (_path) {
+    return path.resolve(this.service.context, _path)
   }
 }

@@ -3,13 +3,15 @@
 const merge = require('webpack-merge')
 const Config = require('webpack-chain')
 const PluginAPI = require('./PluginAPI')
+const path = require('path');
 
 module.exports = class Service {
-  constructor() {
+  constructor(context) {
     this.initialized = false;
     this.webpackChainFns = []
     this.webpackRawConfigFns = []
     this.commands = {}
+    this.context = (context || process.env.CHISEL_CONTEXT || process.cwd());
     this.plugins = this.loadPlugins();
   }
 
@@ -24,7 +26,7 @@ module.exports = class Service {
       './commands/build',
       // config plugins are order sensitive
       './config/base',
-      // './config/css',
+      './config/css',
       // './config/prod',
     ]
 
@@ -35,39 +37,58 @@ module.exports = class Service {
     return plugins;
   }
 
-  initializePlugins() {
-    this.plugins.forEach((({id, apply}) => {
-      apply(new PluginAPI(id, this));
-    }))
+  async initializePlugins() {
+    for(const {id, apply} of this.plugins) {
+      await apply(new PluginAPI(id, this));
+    }
   }
 
-  init() {
+  async init() {
     if(this.initialized) return;
     this.initialized = true;
 
-    this.initializePlugins();
+    const userOptions = require(path.join(this.context, 'chisel.config.js'));
+    this.projectOptions = userOptions;
+
+    if(Array.isArray(userOptions.plugins)) {
+      userOptions.plugins.forEach((plugin, index) => {
+        if(typeof plugin === 'string') {
+          this.plugins.push({id: plugin, apply: require(plugin)})
+        } else if(typeof plugin === 'function') {
+          this.plugins.push({id: plugin.name || `plugin${index}`, apply: plugin})
+        }
+      })
+    }
+
+    await this.initializePlugins();
   }
 
-  run(name, args) {
-    this.init();
+  async run(name, args) {
+    await this.init();
 
     const command = this.commands[name]
-    this.resolveWebpackConfig();
+    await this.resolveWebpackConfig();
 
     if(!command) {
       console.error(`command "${name}" does not exist.`)
       process.exit(1)
     }
 
+    return command.fn(args);
   }
 
-  resolveChainableWebpackConfig () {
+  async resolveChainableWebpackConfig () {
     const chainableConfig = new Config()
-    this.webpackChainFns.forEach(fn => fn(chainableConfig))
+    for(const fn of this.webpackChainFns) {
+      await fn(chainableConfig);
+    }
     return chainableConfig
   }
 
-  resolveWebpackConfig(chainableConfig = this.resolveChainableWebpackConfig()) {
+  async resolveWebpackConfig(chainableConfig) {
+    if(!chainableConfig) {
+      chainableConfig = await  this.resolveChainableWebpackConfig();
+    }
     // get raw config
     let config = chainableConfig.toConfig()
     const original = config
@@ -94,5 +115,6 @@ module.exports = class Service {
     // }
     const { toString } = require('webpack-chain')
     console.log(toString(config));
+    return config;
   }
 }
