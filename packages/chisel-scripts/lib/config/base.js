@@ -1,10 +1,11 @@
-const globby = require('globby');
-const path = require('path');
-
 module.exports = (api, options) => {
   api.chainWebpack(async (webpackConfig) => {
+    const globby = require('globby');
+    const path = require('path');
+
     const isProd = process.env.NODE_ENV === 'production';
     const { projectOptions } = api.service;
+    const { productionSourceMap } = projectOptions;
 
     console.log('updating config');
 
@@ -12,7 +13,7 @@ module.exports = (api, options) => {
       // prettier-ignore
       webpackConfig
         .mode('production')
-        .devtool(projectOptions.productionSourceMap !== false ? 'source-map' : false)
+        .devtool(projectOptions.productionSourceMap !== false && productionSourceMap ? 'source-map' : false)
     } else {
       webpackConfig.mode('development');
     }
@@ -53,9 +54,56 @@ module.exports = (api, options) => {
         .add('node_modules')
         .add(api.resolve('node_modules'))
         .end()
-    // .alias
-    //   .set('@', api.resolve('src'))
-    //   .set('~', api.resolve('src'))
+      .alias
+        .set('@', api.resolve('src'))
+        .set('~', api.resolve('src'))
+
+    const fileLoaderOptions = {
+      name(p) {
+        const relative = path.relative(
+          path.join(baseDir, projectOptions.source.assets),
+          path.dirname(p)
+        );
+
+        if (!relative) {
+          return `${projectOptions.output.assets}/[name].[hash:8].[ext]`;
+        }
+
+        return `${projectOptions.output.assets}/[folder]/[name].[hash:8].[ext]`;
+      },
+    };
+
+    const urlLoaderOptions = {
+      generator(content, mimetype, encoding, resourcePath) {
+        console.log({ content, mimetype, encoding, resourcePath });
+
+        if (resourcePath.endsWith('.svg')) {
+          return require('mini-svg-data-uri')(content.toString());
+        }
+
+        return `data:${mimetype}${
+          encoding ? `;${encoding}` : ''
+        },${content.toString(encoding || undefined)}`;
+      },
+    };
+
+    // prettier-ignore
+    webpackConfig.module
+      .rule('assets')
+        .include
+          .add(api.resolve(path.join(baseDir, projectOptions.source.assets)))
+          .end()
+        .oneOf('inline')
+          .resourceQuery(/inline/)
+          .use('url')
+            .loader('url-loader')
+            .options(urlLoaderOptions)
+            .end()
+          .end()
+        .oneOf('external')
+          .use('file-loader')
+            .loader(require.resolve('file-loader'))
+            .options(fileLoaderOptions)
 
     // prettier-ignore
     webpackConfig.resolveLoader
