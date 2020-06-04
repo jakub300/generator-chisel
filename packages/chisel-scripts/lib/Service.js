@@ -24,6 +24,7 @@ module.exports = class Service {
     const builtInPlugins = [
       // './commands/serve',
       './commands/build',
+      './commands/inspect',
       // config plugins are order sensitive
       './config/base',
       './config/css',
@@ -39,7 +40,7 @@ module.exports = class Service {
 
   async initializePlugins() {
     for(const {id, apply} of this.plugins) {
-      await apply(new PluginAPI(id, this));
+      await apply(new PluginAPI(id, this), this.projectOptions);
     }
   }
 
@@ -67,7 +68,6 @@ module.exports = class Service {
     await this.init();
 
     const command = this.commands[name]
-    await this.resolveWebpackConfig();
 
     if(!command) {
       console.error(`command "${name}" does not exist.`)
@@ -113,8 +113,6 @@ module.exports = class Service {
     //     original.module && original.module.rules
     //   )
     // }
-    const { toString } = require('webpack-chain')
-    console.log(toString(config));
     return config;
   }
 }

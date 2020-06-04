@@ -8,7 +8,10 @@ module.exports = (api, options) => {
       {
         patterns: [
           {
-            from: path.join(api.service.projectOptions.source.base, api.service.projectOptions.source.assets),
+            from: path.join(
+              api.service.projectOptions.source.base,
+              api.service.projectOptions.source.assets
+            ),
             to: `${outDir}/[path][name].[contenthash:8].[ext]`,
           },
         ],
@@ -30,5 +33,33 @@ module.exports = (api, options) => {
           },
         },
       ]);
+  });
+
+  api.registerCommand('dev', {}, async () => {
+    // api.chainWebpack((webpackConfig) => {
+    //   //
+    // });
+
+    const browserSync = require('browser-sync');
+    const webpack = require('webpack');
+    const webpackDevMiddleware = require('webpack-dev-middleware');
+
+    const config = await api.service.resolveWebpackConfig();
+    const compiler = webpack(config);
+    const bs = browserSync.create();
+
+    const browserSyncConfig = {
+      proxy: {
+        target: `xfive-co.test`,
+        reqHeaders: {
+          'x-chisel-proxy': '1',
+        },
+      },
+      ghostMode: false,
+      online: true,
+      middleware: [webpackDevMiddleware(compiler)],
+    };
+
+    bs.init(browserSyncConfig);
   });
 };

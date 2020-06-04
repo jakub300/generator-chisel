@@ -1,5 +1,5 @@
 {
-  "name": "chisel-wordpress",
+  "name": "chisel-plugin-wordpress",
   "version": "0.0.0",
   "description": "TODO",
   "main": "index.js",
@@ -25,8 +25,10 @@
     "node": ">=10"
   },
   "dependencies": {
-    "browser-sync-webpack-plugin": "^2.2.2",
+    "browser-sync": "^2.26.7",
     "copy-webpack-plugin": "^6.0.1",
+    "webpack": "^4.43.0",
+    "webpack-dev-middleware": "^3.7.2",
     "webpack-manifest-plugin": "3.0.0-rc.0"
   },
   "peerDependencies": {},

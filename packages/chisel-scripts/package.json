@@ -28,10 +28,14 @@
   },
   "dependencies": {
     "case-sensitive-paths-webpack-plugin": "^2.3.0",
+    "chalk": "^4.0.0",
     "chisel-shared-utils": "file:../chisel-shared-utils",
+    "cliui": "^6.0.0",
     "css-loader": "^3.5.3",
+    "error-overlay-webpack-plugin": "^0.4.1",
     "fibers": "^5.0.0",
     "file-loader": "^6.0.0",
+    "fs-extra": "^9.0.1",
     "globby": "^11.0.1",
     "hash-sum": "^2.0.0",
     "is-glob": "^4.0.1",
@@ -45,6 +49,7 @@
     "webpack": "^4.43.0",
     "webpack-chain": "^6.4.0",
     "webpack-fix-style-only-entries": "^0.5.0",
-    "webpack-merge": "^4.2.2"
+    "webpack-merge": "^4.2.2",
+    "webpackbar": "^4.0.0"
   }
 }

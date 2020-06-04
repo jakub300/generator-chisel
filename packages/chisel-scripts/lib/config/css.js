@@ -7,13 +7,12 @@ module.exports = (api, options) => {
     const path = require('path');
 
     const isProd = process.env.NODE_ENV === 'production';
-    const { projectOptions } = api.service;
     const { productionSourceMap } = api.service;
 
     const sourceMap = Boolean(
       !isProd ||
         (isProd &&
-          projectOptions.productionSourceMap !== false &&
+          options.productionSourceMap !== false &&
           productionSourceMap)
     );
 
@@ -22,6 +21,7 @@ module.exports = (api, options) => {
       sassOptions: {
         indentedSyntax: false,
         includePaths: [api.resolve('node_modules')], // TODO: don't use?
+        outputStyle: 'expanded', //  TODO: test postcss and add minifier
         importer(url, prev, done) {
           (async () => {
             if (isGlob(url)) {
@@ -52,14 +52,14 @@ module.exports = (api, options) => {
       hmr: !isProd,
       publicPath: path.relative(
         api.resolve(
-          path.join(projectOptions.source.base, projectOptions.source.styles)
+          path.join(options.source.base, options.source.styles)
         ),
-        api.resolve(projectOptions.source.base)
+        api.resolve(options.source.base)
       ),
     };
 
     const assetsDir = api.resolve(
-      path.join(projectOptions.source.base, projectOptions.source.assets)
+      path.join(options.source.base, options.source.assets)
     );
 
     const createCssLoader = (rule, test) => {

@@ -1,11 +1,17 @@
 module.exports = (api, options) => {
   api.registerCommand('build', {}, async () => {
+    const path = require('path');
     const webpack = require('webpack');
+    const chalk = require('chalk');
+    const fs = require('fs-extra');
+    const formatStats = require('./formatStats');
 
     return new Promise(async (resolve, reject) => {
       //
 
       const config = await api.service.resolveWebpackConfig();
+      const targetDir = api.resolve(options.output.base);
+      // config.watch = true;
 
       webpack(config, (err, stats) => {
         if (err) {
@@ -15,7 +21,7 @@ module.exports = (api, options) => {
         const info = stats.toJson();
 
         if (stats.hasErrors()) {
-          console.log(stats.toString({ colors: true })); // TODO: detect
+          console.log(stats.toString({ colors: chalk.supportsColor.hasBasic }));
           return reject(`Build failed with errors.`);
         }
 
@@ -23,8 +29,10 @@ module.exports = (api, options) => {
           console.warn(info.warnings);
         }
 
-        console.log('DONE');
-        console.log(stats.toString({ colors: true })); // TODO: detect
+        const targetDirShort = path.relative(api.service.context, targetDir);
+        const assetsDir = `${options.output.assets}/`;
+        console.log();
+        console.log(formatStats(stats, targetDirShort, assetsDir, api));
 
         resolve();
       });

@@ -4,32 +4,29 @@ module.exports = (api, options) => {
     const path = require('path');
 
     const isProd = process.env.NODE_ENV === 'production';
-    const { projectOptions } = api.service;
-    const { productionSourceMap } = projectOptions;
-
-    console.log('updating config');
+    const { productionSourceMap, productionMinimize = true } = options;
 
     if (isProd) {
       // prettier-ignore
       webpackConfig
         .mode('production')
-        .devtool(projectOptions.productionSourceMap !== false && productionSourceMap ? 'source-map' : false)
+        .devtool(options.productionSourceMap !== false && productionSourceMap ? 'source-map' : false)
+
+      if (!productionMinimize) {
+        webpackConfig.optimization.minimize(false);
+      }
     } else {
-      webpackConfig.mode('development');
+      webpackConfig.mode('development').devtool('cheap-module-source-map');
     }
 
-    const baseDir = api.resolve(projectOptions.source.base);
+    const baseDir = api.resolve(options.source.base);
 
     webpackConfig.context(api.service.context);
 
     (
       await globby([
-        path
-          .join(baseDir, projectOptions.source.scripts, '*.js')
-          .replace(/\\/g, '/'),
-        path
-          .join(baseDir, projectOptions.source.styles, '*.scss')
-          .replace(/\\/g, '/'),
+        path.join(baseDir, options.source.scripts, '*.js').replace(/\\/g, '/'),
+        path.join(baseDir, options.source.styles, '*.scss').replace(/\\/g, '/'),
       ])
     )
       .map((p) => path.relative(api.service.context, p))
@@ -37,14 +34,13 @@ module.exports = (api, options) => {
       .forEach((p) => {
         const ext = path.extname(p);
         const base = path.basename(p, ext);
-        const outDir =
-          projectOptions.output[ext === '.scss' ? 'styles' : 'scripts'];
+        const outDir = options.output[ext === '.scss' ? 'styles' : 'scripts'];
         webpackConfig.entry(`${outDir}/${base}`).add(`./${p}`).end();
       });
 
-    const outScriptsDir = projectOptions.output.scripts;
+    const outScriptsDir = options.output.scripts;
     webpackConfig.output
-      .path(api.resolve(projectOptions.output.base))
+      .path(api.resolve(options.output.base))
       .filename(`[name]${isProd ? '.[contenthash:8]' : ''}.js`)
       .chunkFilename(`${outScriptsDir}/[id].js`);
 
@@ -61,22 +57,20 @@ module.exports = (api, options) => {
     const fileLoaderOptions = {
       name(p) {
         const relative = path.relative(
-          path.join(baseDir, projectOptions.source.assets),
+          path.join(baseDir, options.source.assets),
           path.dirname(p)
         );
 
         if (!relative) {
-          return `${projectOptions.output.assets}/[name].[hash:8].[ext]`;
+          return `${options.output.assets}/[name].[hash:8].[ext]`;
         }
 
-        return `${projectOptions.output.assets}/[folder]/[name].[hash:8].[ext]`;
+        return `${options.output.assets}/[folder]/[name].[hash:8].[ext]`;
       },
     };
 
     const urlLoaderOptions = {
       generator(content, mimetype, encoding, resourcePath) {
-        console.log({ content, mimetype, encoding, resourcePath });
-
         if (resourcePath.endsWith('.svg')) {
           return require('mini-svg-data-uri')(content.toString());
         }
@@ -91,7 +85,7 @@ module.exports = (api, options) => {
     webpackConfig.module
       .rule('assets')
         .include
-          .add(api.resolve(path.join(baseDir, projectOptions.source.assets)))
+          .add(api.resolve(path.join(baseDir, options.source.assets)))
           .end()
         .oneOf('inline')
           .resourceQuery(/inline/)
@@ -118,6 +112,10 @@ module.exports = (api, options) => {
     webpackConfig
       .plugin('chisel-dynamic-public-path')
       .use(require('../webpack-plugins/DynamicPublicPath'));
+
+    webpackConfig.plugin('webpackbar').use(require('webpackbar'));
+
+    webpackConfig.plugin('error-overlay-webpack-plugin').use(require('error-overlay-webpack-plugin'));
 
     if (isProd) {
       // keep chunk ids stable so async chunks have consistent hash (#1916)
