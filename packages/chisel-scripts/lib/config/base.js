@@ -115,8 +115,6 @@ module.exports = (api, options) => {
 
     webpackConfig.plugin('webpackbar').use(require('webpackbar'));
 
-    webpackConfig.plugin('error-overlay-webpack-plugin').use(require('error-overlay-webpack-plugin'));
-
     if (isProd) {
       // keep chunk ids stable so async chunks have consistent hash (#1916)
       webpackConfig

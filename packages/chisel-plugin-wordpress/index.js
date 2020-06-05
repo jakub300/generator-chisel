@@ -22,8 +22,8 @@ module.exports = (api, options) => {
       .plugin('wordpress-manifest')
       .use(require('webpack-manifest-plugin'), [
         {
-          // fileName: config.dest.revManifest,
-          // seed: {},
+          fileName: `manifest${!isProd ? '-dev' : ''}.json`,
+          writeToFileEmit: !isProd,
           map(obj) {
             if (obj.isAsset && obj.name.startsWith(`${outDir}/`)) {
               obj.name = obj.name.replace(/\.[\da-f]{8}\.(?=[^\.]*$)/, '.');
@@ -44,6 +44,8 @@ module.exports = (api, options) => {
     const webpack = require('webpack');
     const webpackDevMiddleware = require('webpack-dev-middleware');
 
+    process.env.NODE_ENV = 'development';
+
     const config = await api.service.resolveWebpackConfig();
     const compiler = webpack(config);
     const bs = browserSync.create();
@@ -57,7 +59,12 @@ module.exports = (api, options) => {
       },
       ghostMode: false,
       online: true,
-      middleware: [webpackDevMiddleware(compiler)],
+      middleware: [
+        webpackDevMiddleware(compiler, {
+          publicPath: '/wp-content/themes/xfive-co-chisel/dist/',
+          stats: 'errors-warnings',
+        }),
+      ],
     };
 
     bs.init(browserSyncConfig);

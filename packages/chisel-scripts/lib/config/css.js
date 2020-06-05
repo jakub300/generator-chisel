@@ -11,9 +11,7 @@ module.exports = (api, options) => {
 
     const sourceMap = Boolean(
       !isProd ||
-        (isProd &&
-          options.productionSourceMap !== false &&
-          productionSourceMap)
+        (isProd && options.productionSourceMap !== false && productionSourceMap)
     );
 
     const sassLoaderOptions = {
@@ -51,9 +49,7 @@ module.exports = (api, options) => {
     const extractCssLoaderOptions = {
       hmr: !isProd,
       publicPath: path.relative(
-        api.resolve(
-          path.join(options.source.base, options.source.styles)
-        ),
+        api.resolve(path.join(options.source.base, options.source.styles)),
         api.resolve(options.source.base)
       ),
     };
@@ -87,14 +83,16 @@ module.exports = (api, options) => {
         .options(sassLoaderOptions)
         .end()
 
-    //prettier-ignore
     webpackConfig
       .plugin('extract-css')
-        .use(require('mini-css-extract-plugin'), [{
-          filename:  `[name]${isProd ? '.[contenthash:8]' : ''}.css`,
-        }])
-        .end()
-      .plugin('style-only-entries')
-        .use(require('webpack-fix-style-only-entries'), [])
+      .use(require('mini-css-extract-plugin'), [
+        { filename: `[name]${isProd ? '.[contenthash:8]' : ''}.css` },
+      ]);
+
+    if (isProd) {
+      webpackConfig
+        .plugin('style-only-entries')
+        .use(require('webpack-fix-style-only-entries'), [{ silent: true }]);
+    }
   });
 };

@@ -27,6 +27,7 @@ module.exports = class Service {
       './commands/inspect',
       // config plugins are order sensitive
       './config/base',
+      './config/js',
       './config/css',
       // './config/prod',
     ]

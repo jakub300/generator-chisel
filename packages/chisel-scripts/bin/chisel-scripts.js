@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-// TODO: temporary
-process.env.NODE_ENV = 'production';
 const minimist = require('minimist');
 const Service = require('../lib/Service')
 

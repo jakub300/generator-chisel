@@ -6,6 +6,8 @@ module.exports = (api, options) => {
     const fs = require('fs-extra');
     const formatStats = require('./formatStats');
 
+    process.env.NODE_ENV = 'production';
+
     return new Promise(async (resolve, reject) => {
       //
 
