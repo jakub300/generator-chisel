@@ -16,7 +16,7 @@ module.exports = (api, options) => {
         webpackConfig.optimization.minimize(false);
       }
     } else {
-      webpackConfig.mode('development').devtool('cheap-module-source-map');
+      webpackConfig.mode('development').devtool('cheap-module-eval-source-map');
     }
 
     const baseDir = api.resolve(options.source.base);

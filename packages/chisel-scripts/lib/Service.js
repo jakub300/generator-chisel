@@ -92,7 +92,9 @@ module.exports = class Service {
     }
     // get raw config
     let config = chainableConfig.toConfig()
-    const original = config
+    // const original = config
+
+    config.node = false;
     // apply raw config fns
     // this.webpackRawConfigFns.forEach(fn => {
     //   if (typeof fn === 'function') {

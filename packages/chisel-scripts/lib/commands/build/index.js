@@ -1,3 +1,5 @@
+// TODO: docs, clear, watch
+
 module.exports = (api, options) => {
   api.registerCommand('build', {}, async () => {
     const path = require('path');
