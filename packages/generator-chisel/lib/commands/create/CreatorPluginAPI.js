@@ -16,6 +16,10 @@ module.exports = class CreatorPluginAPI {
     this.PRIORITIES = PRIORITIES;
   }
 
+  resolve(..._path) {
+    return path.resolve(this.creator.context, ..._path);
+  }
+
   schedule(...args) {
     return this.creator.schedule(...args);
   }
@@ -48,43 +52,49 @@ module.exports = class CreatorPluginAPI {
     return inquirer.prompt(questions);
   }
 
-  // @from is relative to creators directory
-  async copy(from = ['**/*', '**/.*'], options = {}) {
+  // @param from is relative to creator directory
+  async copy(options = {}) {
     const {
-      to = this.context,
       expandDirectories = true,
-      base = 'template',
+      dot = true,
+      from = 'template',
+      file = ['.'],
+      to = '',
     } = options;
     // let { base = 'template' } = options;
 
-    if (!Array.isArray(from)) from = [from];
+    if (!Array.isArray(file)) file = [file];
 
     const creatorPath = path.resolve(__dirname, 'creators', this.id);
-    const basePath = path.resolve(creatorPath, base);
+    const basePath = path.resolve(creatorPath, from);
     const basePathPosix = slash(basePath);
-    const fromPath = from.map((p) => {
+    const filesPaths = file.map((p) => {
       return path.posix.join(basePathPosix, p);
     });
     const promises = [];
-    const files = await globby(fromPath, { expandDirectories, cwd: base });
+    const files = await globby(filesPaths, {
+      expandDirectories,
+      cwd: basePath,
+      dot,
+    });
 
     files.forEach((file) => {
       const relative = path.relative(basePath, file);
-      let target = path.resolve(this.creator.context, relative);
+      let target = this.resolve(to, relative);
 
-      // console.log({ ext, relative, target });
       if (file.match(CHISEL_TEMPLATE)) {
         target = target.replace(CHISEL_TEMPLATE, '');
 
         promises.push(
-          fs
-            .readFile(file, { encoding: 'utf8' })
-            .then((fileBody) =>
-              fs.outputFile(
-                target,
-                template(fileBody, { sourceURL: file })(this.creator.data)
-              )
+          fs.readFile(file, { encoding: 'utf8' }).then((fileBody) =>
+            fs.outputFile(
+              target,
+              template(fileBody, { sourceURL: file })({
+                ...this.creator.data,
+                creatorData: this.creator.data,
+              })
             )
+          )
         );
       } else {
         promises.push(fs.copy(file, target, { overwrite: true }));
@@ -93,4 +103,34 @@ module.exports = class CreatorPluginAPI {
 
     return Promise.all(promises);
   }
+
+  // async modifyFile(file, modifier, options = {}) {
+  //   const filePath = this.resolve(file);
+  //   const {
+  //     encoding = 'utf8',
+  //     isJson = path.extname(file) === '.json',
+  //   } = options;
+
+  //   let fileBody = fs.readFile(file, { encoding });
+
+  //   if (isJson) {
+  //     fileBody = JSON.parse(fileBody);
+  //   }
+
+  //   let modified = await modifier(fileBody);
+
+  //   if (modified === undefined) {
+  //     modified = fileBody;
+  //   }
+
+  //   const packageJsonPath = this.resolve('package.json');
+
+  //   if (filePath === packageJsonPath) {
+  //     //
+  //   } else if (isJson && typeof modified === 'object') {
+  //     modified = JSON.stringify(modified);
+  //   }
+
+  //   return fs.writeFile(file, modified);
+  // }
 };

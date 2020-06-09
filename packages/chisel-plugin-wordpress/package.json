@@ -16,7 +16,8 @@
   "homepage": "https://www.getchisel.co/",
   "license": "MIT",
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "test": "echo \"Error: run tests from root\" && exit 1",
+    "prepare": "node ./fetch-wp-cli.js"
   },
   "bugs": {
     "url": "https://github.com/xfiveco/generator-chisel/issues"
@@ -25,8 +26,10 @@
     "node": ">=10"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "browser-sync": "^2.26.7",
     "copy-webpack-plugin": "^6.0.1",
+    "execa": "^4.0.2",
     "webpack": "^4.43.0",
     "webpack-dev-middleware": "^3.7.2",
     "webpack-manifest-plugin": "3.0.0-rc.0"

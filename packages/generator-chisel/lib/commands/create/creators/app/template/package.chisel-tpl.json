@@ -1,0 +1,30 @@
+<% /* This file will be later formatted and sorted */ %>
+<% /* Don't worry too much how it looks here */ %>
+<% /* TOOD: precommit */ %>
+{
+  "name": "<%= app.nameSlug %>",
+  "version": "0.0.0",
+  "private": true,
+  "author": "<%= app.author %>",
+  "description": "<%= app.name %>",
+  "scripts": {
+    "dev": "chisel-scripts dev",
+    "watch": "chisel-scripts dev",
+    "build": "chisel-scripts build",
+    "build-report": "TODO",
+    <%= app.projectType == 'wp-with-fe' && `"wp": "chisel-scripts wp",` %>
+    "lint": "TODO chisel-scripts lint"
+  },
+  "devDependencies": {
+    <%= app.projectType == 'wp-with-fe' && `"chisel-plugin-wordpress": "*",` %>
+    "babel-preset-chisel": "*",
+    "postcss-normalize": "^9.0.0",
+    "autoprefixer": "^9.8.0",
+    "chisel-scripts": "*"
+  },
+  "dependencies": {
+  },
+  "engines": {
+    "node": "^10.13.0  || ^12"
+  }
+}

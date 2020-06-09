@@ -5,15 +5,19 @@ const CreatorPluginAPI = require('./CreatorPluginAPI');
 module.exports = class Creator {
   constructor(context) {
     this.data = {};
-    this.queue = new TinyQueue([], (a, b) => a.priority - b.priority);
-    this.context = (context || process.env.CHISEL_CONTEXT || process.cwd());
+    this.queue = new TinyQueue(
+      [],
+      (a, b) => a.priority - b.priority || a.index - b.index
+    );
+    this.context = context || process.env.CHISEL_CONTEXT || process.cwd();
+    this.index = 0;
   }
 
   schedule(priority, action) {
     priority = parseFloat(priority);
     if (!priority) priority = 0;
 
-    this.queue.push({ priority, action });
+    this.queue.push({ priority, index: this.index++, action });
   }
 
   async loadCreator(name) {

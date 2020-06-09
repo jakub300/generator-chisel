@@ -2,6 +2,7 @@ const path = require('path');
 const { startCase } = require('lodash');
 const execa = require('execa');
 const speakingUrl = require('speakingurl');
+const { installDependencies } = require('../../../../utils/package-manager');
 
 module.exports = async (api) => {
   // await
@@ -41,17 +42,25 @@ module.exports = async (api) => {
         ],
       },
       {
-        type: 'list',
+        type: 'checkbox',
         name: 'browsers',
         message: 'Which browsers are you supporting?',
         choices: [
           {
-            name: 'Modern (3 recent versions of Chrome, Firefox, Safari)',
+            name: 'Modern (3 recent versions of popular browsers)',
+            short: 'Modern',
             value: 'modern',
+            checked: true,
           },
           {
-            name: 'Modern and Internet Explorer 11',
-            value: 'modern-and-ie11',
+            name: 'Edge 18 (last Edge version before engine change)',
+            short: 'Edge 18',
+            value: 'edge18',
+            checked: true,
+          },
+          {
+            name: 'Internet Explorer 11',
+            value: 'ie11',
           },
         ],
       },
@@ -72,5 +81,9 @@ module.exports = async (api) => {
 
   api.schedule(api.PRIORITIES.COPY, async () => {
     await api.copy();
+  });
+
+  api.schedule(api.PRIORITIES.INSTALL_DEPENDENCIES, () => {
+    return installDependencies();
   });
 };
