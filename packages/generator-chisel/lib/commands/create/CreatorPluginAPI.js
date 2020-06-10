@@ -1,13 +1,8 @@
 const PRIORITIES = require('./priorities');
 const inquirer = require('inquirer');
-const globby = require('globby');
 const path = require('path');
 const fs = require('fs-extra');
-const { template, merge } = require('lodash');
-
-const slash = (str) => str.replace(/\\/g, '/');
-
-const CHISEL_TEMPLATE = /\.chisel-tpl(?:$|(?=\.))/;
+const { merge } = require('lodash');
 
 module.exports = class CreatorPluginAPI {
   constructor(id, creator) {
@@ -53,84 +48,52 @@ module.exports = class CreatorPluginAPI {
   }
 
   // @param from is relative to creator directory
-  async copy(options = {}) {
-    const {
-      expandDirectories = true,
-      dot = true,
-      from = 'template',
-      file = ['.'],
-      to = '',
-    } = options;
-    // let { base = 'template' } = options;
+  copy(options = {}) {
+    const { copy } = require('chisel-shared-utils');
 
-    if (!Array.isArray(file)) file = [file];
-
-    const creatorPath = path.resolve(__dirname, 'creators', this.id);
-    const basePath = path.resolve(creatorPath, from);
-    const basePathPosix = slash(basePath);
-    const filesPaths = file.map((p) => {
-      return path.posix.join(basePathPosix, p);
+    return copy({
+      ...options,
+      from: path.resolve(
+        __dirname,
+        'creators',
+        this.id,
+        options.from || 'template'
+      ),
+      to: this.resolve(options.to),
+      templateData: {
+        ...this.creator.data,
+        creatorData: this.creator.data,
+      },
     });
-    const promises = [];
-    const files = await globby(filesPaths, {
-      expandDirectories,
-      cwd: basePath,
-      dot,
-    });
-
-    files.forEach((file) => {
-      const relative = path.relative(basePath, file);
-      let target = this.resolve(to, relative);
-
-      if (file.match(CHISEL_TEMPLATE)) {
-        target = target.replace(CHISEL_TEMPLATE, '');
-
-        promises.push(
-          fs.readFile(file, { encoding: 'utf8' }).then((fileBody) =>
-            fs.outputFile(
-              target,
-              template(fileBody, { sourceURL: file })({
-                ...this.creator.data,
-                creatorData: this.creator.data,
-              })
-            )
-          )
-        );
-      } else {
-        promises.push(fs.copy(file, target, { overwrite: true }));
-      }
-    });
-
-    return Promise.all(promises);
   }
 
-  // async modifyFile(file, modifier, options = {}) {
-  //   const filePath = this.resolve(file);
-  //   const {
-  //     encoding = 'utf8',
-  //     isJson = path.extname(file) === '.json',
-  //   } = options;
+  async modifyFile(file, modifier, options = {}) {
+    const filePath = this.resolve(file);
+    const {
+      encoding = 'utf8',
+      isJson = path.extname(file) === '.json',
+    } = options;
 
-  //   let fileBody = fs.readFile(file, { encoding });
+    let fileBody = await fs.readFile(file, { encoding });
 
-  //   if (isJson) {
-  //     fileBody = JSON.parse(fileBody);
-  //   }
+    if (isJson) {
+      fileBody = JSON.parse(fileBody);
+    }
 
-  //   let modified = await modifier(fileBody);
+    let modified = await modifier(fileBody);
 
-  //   if (modified === undefined) {
-  //     modified = fileBody;
-  //   }
+    if (modified === undefined) {
+      modified = fileBody;
+    }
 
-  //   const packageJsonPath = this.resolve('package.json');
+    const packageJsonPath = this.resolve('package.json');
 
-  //   if (filePath === packageJsonPath) {
-  //     //
-  //   } else if (isJson && typeof modified === 'object') {
-  //     modified = JSON.stringify(modified);
-  //   }
+    if (filePath === packageJsonPath) {
+      //
+    } else if (isJson && typeof modified === 'object') {
+      modified = JSON.stringify(modified);
+    }
 
-  //   return fs.writeFile(file, modified);
-  // }
+    return fs.writeFile(file, modified);
+  }
 };

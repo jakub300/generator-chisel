@@ -2,7 +2,7 @@ const path = require('path');
 const { startCase } = require('lodash');
 const execa = require('execa');
 const speakingUrl = require('speakingurl');
-const { installDependencies } = require('../../../../utils/package-manager');
+const { installDependencies } = require('chisel-shared-utils');
 
 module.exports = async (api) => {
   // await

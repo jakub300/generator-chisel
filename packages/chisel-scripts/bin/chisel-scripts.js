@@ -7,9 +7,7 @@ const argv = minimist(process.argv.slice(2));
 const command = argv._[0];
 const service = new Service();
 
-service.run(command, argv);
-
-// .catch(err => {
-//   console.error(String(err));
-//   process.exit(1)
-// })
+service.run(command, argv).catch((err) => {
+  console.error(String(err));
+  process.exit(1);
+});

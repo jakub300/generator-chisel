@@ -35,53 +35,7 @@ module.exports = (api, options) => {
       ]);
   });
 
-  api.registerCommand('dev', {}, async () => {
-    // api.chainWebpack((webpackConfig) => {
-    //   //
-    // });
-
-    const browserSync = require('browser-sync');
-    const webpack = require('webpack');
-    const webpackDevMiddleware = require('webpack-dev-middleware');
-
-    process.env.NODE_ENV = 'development';
-
-    const config = await api.service.resolveWebpackConfig();
-    const compiler = webpack(config);
-    const bs = browserSync.create();
-
-    const browserSyncConfig = {
-      proxy: {
-        target: `xfive-co.test`,
-        reqHeaders: {
-          'x-chisel-proxy': '1',
-        },
-      },
-      ghostMode: false,
-      online: true,
-      middleware: [
-        webpackDevMiddleware(compiler, {
-          publicPath: '/wp-content/themes/xfive-co-chisel/dist/',
-          stats: 'errors-warnings',
-        }),
-      ],
-    };
-
-    bs.init(browserSyncConfig);
-  });
-
-  api.registerCommand('wp', {}, async () => {
-    const execa = require('execa');
-    const path = require('path');
-
-    const args = process.argv.slice(3);
-    const wpCliPath = path.resolve(__dirname, 'wp-cli.phar');
-
-    try {
-      const wp = await execa('php', [wpCliPath, ...args], { stdio: 'inherit' });
-      process.exit(wp.exitCode);
-    } catch (e) {
-      process.exit(e.exitCode);
-    }
+  ['dev', 'wp', 'wp-config'].forEach((command) => {
+    require(`./commands/${command}`)(api, options);
   });
 };
