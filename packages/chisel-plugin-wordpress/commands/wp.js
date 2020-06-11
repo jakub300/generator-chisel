@@ -9,7 +9,9 @@ module.exports = (api, options) => {
     try {
       // TODO: use: reject: false
       // TODO: use chisel-shared-utils
-      const wp = await execa('php', [wpCliPath, ...args], { stdio: 'inherit' });
+      const wp = await execa('php', [wpCliPath, '--color', ...args], {
+        stdio: 'inherit',
+      });
       process.exit(wp.exitCode);
     } catch (e) {
       process.exit(e.exitCode);

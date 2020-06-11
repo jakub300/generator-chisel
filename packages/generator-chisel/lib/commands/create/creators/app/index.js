@@ -13,7 +13,7 @@ module.exports = async (api) => {
       timeout: 2000,
     }).catch(() => ({}));
 
-    const { app } = await api.prompt([
+    const app = await api.prompt([
       {
         name: 'name',
         message: 'Please enter the project name:',

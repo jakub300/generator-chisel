@@ -10,7 +10,19 @@ function run(args, options = {}) {
     ...execaOpts,
   };
 
-  const run = execa(args[0], args.slice(1), execaOptsNormalized);
+  const argsNormalized = []
+    .concat(
+      ...args.slice(1).map((arg) => {
+        if (typeof arg !== 'object') return arg;
+
+        return Object.entries(arg).map(([key, val]) =>
+          typeof val === 'boolean' ? val && `--${key}` : `--${key}=${val}`
+        );
+      })
+    )
+    .filter(Boolean);
+
+  const run = execa(args[0], argsNormalized, execaOptsNormalized);
 
   if (!silent) {
     run.stdout.pipe(process.stdout);

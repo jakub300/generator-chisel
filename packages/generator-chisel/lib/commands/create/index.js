@@ -1,12 +1,11 @@
-const TinyQueue = require('tinyqueue');
 const Creator = require('./Creator');
 
-const createCommand = async () => {
-  const creator = new Creator();
+const createCommand = async ({ args, cmd }) => {
+  const creator = new Creator(undefined, { args, cmd });
 
   await creator.loadCreator('app');
 
   return creator.run();
-}
+};
 
 module.exports = createCommand;

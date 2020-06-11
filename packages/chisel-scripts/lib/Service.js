@@ -4,6 +4,7 @@ const merge = require('webpack-merge')
 const Config = require('webpack-chain')
 const PluginAPI = require('./PluginAPI')
 const path = require('path');
+const { defaultsDeep } = require('lodash');
 
 module.exports = class Service {
   constructor(context) {
@@ -49,8 +50,15 @@ module.exports = class Service {
     if(this.initialized) return;
     this.initialized = true;
 
-    const userOptions = require(path.join(this.context, 'chisel.config.js'));
-    this.projectOptions = userOptions;
+    const baseOptions = require('./chisel.config.base.js');
+    const userOptions = require(path.resolve(this.context, 'chisel.config.js'));
+    let userLocalOptions = {};
+    try {
+      userLocalOptions = require(path.resolve(this.context, 'chisel.config.local.js'))
+    } catch(e) {
+      //
+    }
+    this.projectOptions = defaultsDeep({}, userLocalOptions, userOptions, baseOptions);
 
     if(Array.isArray(userOptions.plugins)) {
       userOptions.plugins.forEach((plugin, index) => {

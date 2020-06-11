@@ -3,13 +3,15 @@ const path = require('path');
 const CreatorPluginAPI = require('./CreatorPluginAPI');
 
 module.exports = class Creator {
-  constructor(context) {
+  constructor(context, opts) {
     this.data = {};
     this.queue = new TinyQueue(
       [],
       (a, b) => a.priority - b.priority || a.index - b.index
     );
     this.context = context || process.env.CHISEL_CONTEXT || process.cwd();
+    this.args = opts.args;
+    this.cmd = opts.cmd;
     this.index = 0;
   }
 

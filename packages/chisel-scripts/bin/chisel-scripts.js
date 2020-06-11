@@ -8,6 +8,6 @@ const command = argv._[0];
 const service = new Service();
 
 service.run(command, argv).catch((err) => {
-  console.error(String(err));
+  console.error(err);
   process.exit(1);
 });

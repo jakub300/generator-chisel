@@ -26,7 +26,7 @@ module.exports = (api, options) => {
           writeToFileEmit: !isProd,
           map(obj) {
             if (obj.isAsset && obj.name.startsWith(`${outDir}/`)) {
-              obj.name = obj.name.replace(/\.[\da-f]{8}\.(?=[^\.]*$)/, '.');
+              obj.name = obj.name.replace(/\.[\da-f]{8}(?=(?:\.[^\.]*)?$)/, '');
             }
 
             return obj;

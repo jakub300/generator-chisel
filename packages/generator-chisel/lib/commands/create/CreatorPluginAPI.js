@@ -12,7 +12,7 @@ module.exports = class CreatorPluginAPI {
   }
 
   resolve(..._path) {
-    return path.resolve(this.creator.context, ..._path);
+    return path.resolve(this.creator.context, ..._path.filter(Boolean));
   }
 
   schedule(...args) {
@@ -40,7 +40,7 @@ module.exports = class CreatorPluginAPI {
 
     merge(this.creator.data, answers);
 
-    return this.creator.data;
+    return this.creator.data[this.id];
   }
 
   async promptLocal(questions) {

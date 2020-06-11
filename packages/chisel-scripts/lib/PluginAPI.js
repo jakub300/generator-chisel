@@ -60,7 +60,7 @@ module.exports =class PluginAPI {
    * @param {string} _path - Relative path from project root
    * @return {string} The resolved absolute path.
    */
-  resolve (_path = '') {
-    return path.resolve(this.service.context, _path)
+  resolve (..._path) {
+    return path.resolve(this.service.context, ..._path.filter(Boolean))
   }
 }

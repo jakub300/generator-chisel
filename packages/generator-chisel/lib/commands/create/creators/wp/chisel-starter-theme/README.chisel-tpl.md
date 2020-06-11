@@ -1,4 +1,4 @@
-<%= name %> theme for WordPress based on Timber library.
+<%= app.name %> theme for WordPress based on Timber library.
 
 All files directly under templates/ should extend some layout defined in layouts/ directory.
 

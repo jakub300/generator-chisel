@@ -49,3 +49,4 @@ npm-debug.log
 
 # Chisel
 /dev-vhost.conf
+/chisel.config.local.js
