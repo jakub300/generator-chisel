@@ -66,22 +66,7 @@ class ChiselTwig extends Twig {
 
 		$this->registerFunction(
 			$twig,
-			'hasVendor'
-		);
-
-		$this->registerFunction(
-			$twig,
-			'getScriptsPath'
-		);
-
-		$this->registerFunction(
-			$twig,
-			'hasWebpackManifest'
-		);
-
-		$this->registerFunction(
-			$twig,
-			'getWebpackManifest'
+			'getDistPath'
 		);
 
 		return $twig;
@@ -110,30 +95,18 @@ class ChiselTwig extends Twig {
 	 * @return string
 	 */
 	public function revisionedPath( $asset ) {
-		$pathinfo = pathinfo( $asset );
+		$manifest = $this->getManifest();
 
-		if ( ! defined( 'CHISEL_DEV_ENV' ) ) {
-			$manifest = $this->getManifest();
-			if ( ! array_key_exists( $pathinfo['basename'], $manifest ) ) {
-				return 'FILE-NOT-REVISIONED';
-			}
-
-			return sprintf(
-				'%s/%s%s/%s',
-				get_template_directory_uri(),
-				\Chisel\Settings::DIST_PATH,
-				$pathinfo['dirname'],
-				$manifest[ $pathinfo['basename'] ]
-			);
-		} else {
-			return sprintf(
-				'%s/%s%s%s',
-				get_template_directory_uri(),
-				\Chisel\Settings::DIST_PATH,
-				trim( $asset, '/' ),
-				'?' . time()
-			);
+		if ( ! array_key_exists( $asset, $manifest ) ) {
+			return 'FILE-NOT-REVISIONED';
 		}
+
+		return sprintf(
+			'%s/%s%s',
+			get_template_directory_uri(),
+			\Chisel\Settings::DIST_PATH,
+			$manifest[ $asset ]
+		);
 	}
 
 	/**
@@ -144,12 +117,7 @@ class ChiselTwig extends Twig {
 	 * @return string
 	 */
 	public function assetPath( $asset ) {
-		return sprintf(
-			'%s/%s%s',
-			get_template_directory_uri(),
-			\Chisel\Settings::ASSETS_PATH,
-			trim( $asset, '/' )
-		);
+		return $this->revisionedPath( \Chisel\Settings::ASSETS_PATH . $asset );
 	}
 
 	/**
@@ -205,80 +173,49 @@ class ChiselTwig extends Twig {
 	}
 
 	/**
-	 * Verifies existence of the vendor.js file
+	 * Verifies existence of the given file in manifest and in file system
 	 *
 	 * @return bool
 	 */
-	public function hasVendor() {
-		if ( defined( 'CHISEL_DEV_ENV' ) ) {
-			return file_exists(
-				sprintf(
-					'%s/%s%s',
-					get_template_directory(),
-					\Chisel\Settings::DIST_PATH,
-					'scripts/vendor.js'
-				)
-			);
-		} else {
-			$manifest = $this->getManifest();
+	// public function hasFile( $asset ) {
+	// 	$manifest = $this->getManifest();
 
-			return array_key_exists( 'vendor.js', $manifest );
-		}
-	}
+	// 	if ( ! array_key_exists( $asset, $manifest ) ) {
+	// 		return false;
+	// 	}
+
+	// 	return file_exists(
+	// 		sprintf(
+	// 			'%s/%s%s',
+	// 			get_template_directory(),
+	// 			\Chisel\Settings::DIST_PATH,
+	// 			manifest[ $asset ]
+	// 		)
+	// 	);
+	// }
 
 	/**
-	 * Returns the real path of the scripts directory.
+	 * Returns the real path of the dist directory.
 	 *
 	 * @return string
 	 */
-	public function getScriptsPath() {
+	public function getDistPath() {
 		return sprintf(
 			'%s/%s',
 			get_template_directory_uri(),
-			\Chisel\Settings::SCRIPTS_PATH
+			\Chisel\Settings::DIST_PATH
 		);
-	}
-
-	/**
-	 * Verifies existence of webpack manifest file.
-	 *
-	 * @return bool
-	 */
-	public function hasWebpackManifest() {
-		return file_exists(
-			sprintf(
-				'%s/%s',
-				get_template_directory(),
-				\Chisel\Settings::getWebpackManifestPath()
-			)
-		);
-	}
-
-	/**
-	 * Returns the contents of the webpack manifest file.
-	 *
-	 * @return string
-	 */
-	public function getWebpackManifest() {
-		if( $this->hasWebpackManifest() ) {
-			return file_get_contents(
-				sprintf(
-					'%s/%s',
-					get_template_directory(),
-					\Chisel\Settings::getWebpackManifestPath()
-				)
-			);
-		}
-		return '';
 	}
 
 	/**
 	 * Loads data from manifest file.
 	 */
 	private function initManifest() {
-		if ( file_exists( get_template_directory() . '/' . \Chisel\Settings::MANIFEST_PATH ) ) {
+		$manifestPath = defined( 'CHISEL_DEV_ENV' ) ? \Chisel\Settings::MANIFEST_DEV_PATH : \Chisel\Settings::MANIFEST_PATH;
+
+		if ( file_exists( get_template_directory() . '/' . $manifestPath ) ) {
 			$this->manifest = json_decode(
-				file_get_contents( get_template_directory() . '/' . \Chisel\Settings::MANIFEST_PATH ),
+				file_get_contents( get_template_directory() . '/' . $manifestPath ),
 				true
 			);
 		}

@@ -16,7 +16,7 @@ program
   .option('--skip-wp-install')
   .option(
     '--link',
-    'link Chisel packages (yarn link) in created project (for development)'
+    'TODO link Chisel packages (yarn link) in created project (for development)'
   )
   .action((...args) => {
     const cmd = args.slice(-1)[0];

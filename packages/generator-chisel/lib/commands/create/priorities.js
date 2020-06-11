@@ -22,4 +22,6 @@ module.exports = {
   COPY_SECOND: 2000,
 
   FORMAT: 2500,
+
+  BUILD: 3000,
 };

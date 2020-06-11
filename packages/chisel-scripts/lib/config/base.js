@@ -22,6 +22,7 @@ module.exports = (api, options) => {
     const baseDir = api.resolve(options.source.base);
 
     webpackConfig.context(api.service.context);
+    const scriptEntries = new Set();
 
     (
       await globby([
@@ -35,7 +36,9 @@ module.exports = (api, options) => {
         const ext = path.extname(p);
         const base = path.basename(p, ext);
         const outDir = options.output[ext === '.scss' ? 'styles' : 'scripts'];
-        webpackConfig.entry(`${outDir}/${base}`).add(`./${p}`).end();
+        const name = `${outDir}/${base}`;
+        scriptEntries.add(name);
+        webpackConfig.entry(name).add(`./${p}`).end();
       });
 
     const outScriptsDir = options.output.scripts;
@@ -51,8 +54,11 @@ module.exports = (api, options) => {
         .add(api.resolve('node_modules'))
         .end()
       .alias
-        .set('@', api.resolve('src'))
-        .set('~', api.resolve('src'))
+        .set('@@', api.resolve(options.source.base))
+        .set('~~', api.resolve(options.source.base))
+        .set('@', api.resolve(options.source.base, options.source.scripts))
+        .set('~', api.resolve(options.source.base, options.source.scripts))
+        .set('assets', api.resolve(options.source.base, options.source.assets))
 
     const fileLoaderOptions = {
       name(p) {
@@ -111,7 +117,9 @@ module.exports = (api, options) => {
 
     webpackConfig
       .plugin('chisel-dynamic-public-path')
-      .use(require('../webpack-plugins/DynamicPublicPath'));
+      .use(require('../webpack-plugins/DynamicPublicPath'), [
+        { scriptEntries },
+      ]);
 
     webpackConfig.plugin('webpackbar').use(require('webpackbar'));
 

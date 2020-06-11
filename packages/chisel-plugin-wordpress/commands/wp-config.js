@@ -40,14 +40,17 @@ module.exports = (api, options) => {
 
       answers.databaseHostPort = `${answers.databaseHost}:${answers.databasePort}`;
 
+      const { url } = options.wp;
+      const { tablePrefix } = options.creatorData.wp;
+
       await copy({
         from: path.join(__dirname, '../template'),
         to: api.resolve(),
         templateData: {
           ...answers,
           documentRoot: api.resolve('wp'),
-          serverName: 'todo.test', // TODO
-          tablePrefix: 'wp_', // TODO
+          serverName: new URL(url).hostname,
+          tablePrefix,
         },
       });
 

@@ -1,6 +1,7 @@
 const { runLocal } = require('chisel-shared-utils');
 const crypto = require('crypto');
 const execa = require('execa');
+const fs = require('fs-extra');
 
 const wp = (args, opts) => runLocal(['chisel-scripts', 'wp', ...args], opts);
 
@@ -78,6 +79,14 @@ module.exports = (api) => {
   });
 
   api.schedule(api.PRIORITIES.COPY, async () => {
+    const wpDist = require(api.resolve('chisel.config.js')).output.base;
+
+    await fs.move(
+      api.resolve('src/templates'),
+      api.resolve(wpDist, '../templates'),
+      { overwrite: true }
+    );
+
     await api.copy(); // template directory
 
     const { tablePrefix } = api.creator.data.wp;
@@ -88,8 +97,6 @@ module.exports = (api) => {
           crypto.randomBytes(30).toString('base64')
         )
     );
-
-    const wpDist = require(api.resolve('chisel.config.js')).output.base;
     await api.copy({ from: 'chisel-starter-theme', to: `${wpDist}/..` });
   });
 

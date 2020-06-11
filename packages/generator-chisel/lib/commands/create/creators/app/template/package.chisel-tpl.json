@@ -20,6 +20,8 @@
     "babel-preset-chisel": "*",
     "postcss-normalize": "^9.0.0",
     "autoprefixer": "^9.8.0",
+    <% /* required by postcss-normalize for some reason  */ %>
+    "browserslist": "^4.12.0",
     "chisel-scripts": "*"
   },
   "dependencies": {

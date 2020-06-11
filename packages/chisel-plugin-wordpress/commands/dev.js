@@ -16,7 +16,7 @@ module.exports = (api, options) => {
 
     const browserSyncConfig = {
       proxy: {
-        target: `xfive-co.test`,
+        target: options.wp.url,
         reqHeaders: {
           'x-chisel-proxy': '1',
         },
@@ -25,7 +25,7 @@ module.exports = (api, options) => {
       online: true,
       middleware: [
         webpackDevMiddleware(compiler, {
-          publicPath: '/wp-content/themes/xfive-co-chisel/dist/',
+          publicPath: `/wp-content/themes/${options.wp.themeName}/dist`,
           stats: 'errors-warnings',
         }),
       ],
