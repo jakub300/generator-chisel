@@ -14,6 +14,7 @@ program
   .option('--skip-wp-download')
   .option('--skip-wp-config')
   .option('--skip-wp-install')
+  .option('--skip-wp-plugins')
   .option(
     '--link',
     'TODO link Chisel packages (yarn link) in created project (for development)'

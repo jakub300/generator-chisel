@@ -10,7 +10,7 @@ const gitConfig = (field) =>
 
 module.exports = (api) => {
   api.schedule(api.PRIORITIES.ASK, async () => {
-    // await api.creator.loadCreator('wp-plugins');
+    await api.creator.loadCreator('wp-plugins');
 
     const userName = gitConfig('user.name');
     const userEmail = gitConfig('user.email');

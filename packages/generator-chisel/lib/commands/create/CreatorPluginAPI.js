@@ -2,7 +2,7 @@ const PRIORITIES = require('./priorities');
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
-const { merge } = require('lodash');
+const { merge, camelCase } = require('lodash');
 
 module.exports = class CreatorPluginAPI {
   constructor(id, creator) {
@@ -27,7 +27,7 @@ module.exports = class CreatorPluginAPI {
     const questionsNormalized = questions.map((question) => {
       const questionCopy = { ...question };
       if (questionCopy.name) {
-        questionCopy.name = `${this.id}.${questionCopy.name}`;
+        questionCopy.name = `${camelCase(this.id)}.${questionCopy.name}`;
       }
 
       return questionCopy;
