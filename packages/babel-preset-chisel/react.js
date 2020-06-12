@@ -6,7 +6,12 @@
 
 module.exports = function chiselReactPreset(api, options) {
   const env = api.env(); // TODO: test
-  const { pragma, pragmaFrag, processOptions = (_, opts) => opts } = options;
+  const {
+    pragma,
+    pragmaFrag,
+    hot = false,
+    processOptions = (_, opts) => opts,
+  } = options;
 
   const isDevelopment = env === 'development' || env === 'test';
 
@@ -22,5 +27,6 @@ module.exports = function chiselReactPreset(api, options) {
         }),
       ],
     ],
+    plugins: [...(hot ? ['react-hot-loader/babel'] : [])],
   };
 };

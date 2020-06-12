@@ -6,6 +6,9 @@
   <link rel="stylesheet" property="stylesheet" href="{{ revisionedPath('styles/main.css') }}" type="text/css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script>document.documentElement.classList.remove('no-js');</script>
+  {% if isDev() %}
+    <script src="{{ revisionedPath('styles/main.js') }}" defer></script>
+  {% endif %}
   <script src="{{ revisionedPath('scripts/app.js') }}" defer></script>
 <% if (isWP) { %>  <link rel="pingback" href="{{ site.pingback_url }}" />
 

@@ -66,7 +66,17 @@ class ChiselTwig extends Twig {
 
 		$this->registerFunction(
 			$twig,
+			'hasFile'
+		);
+
+		$this->registerFunction(
+			$twig,
 			'getDistPath'
+		);
+
+		$this->registerFunction(
+			$twig,
+			'isDev'
 		);
 
 		return $twig;
@@ -87,8 +97,7 @@ class ChiselTwig extends Twig {
 
 	/**
 	 * Returns the real path of the revisioned file.
-	 * When CHISEL_DEV_ENV is defined it returns
-	 *  path based on the manifest file content.
+	 *  based on the manifest file content.
 	 *
 	 * @param $asset
 	 *
@@ -173,26 +182,15 @@ class ChiselTwig extends Twig {
 	}
 
 	/**
-	 * Verifies existence of the given file in manifest and in file system
+	 * Verifies existence of the given file in manifest
 	 *
 	 * @return bool
 	 */
-	// public function hasFile( $asset ) {
-	// 	$manifest = $this->getManifest();
+	public function hasFile( $asset ) {
+		$manifest = $this->getManifest();
 
-	// 	if ( ! array_key_exists( $asset, $manifest ) ) {
-	// 		return false;
-	// 	}
-
-	// 	return file_exists(
-	// 		sprintf(
-	// 			'%s/%s%s',
-	// 			get_template_directory(),
-	// 			\Chisel\Settings::DIST_PATH,
-	// 			manifest[ $asset ]
-	// 		)
-	// 	);
-	// }
+		return array_key_exists( $asset, $manifest );
+	}
 
 	/**
 	 * Returns the real path of the dist directory.
@@ -205,6 +203,15 @@ class ChiselTwig extends Twig {
 			get_template_directory_uri(),
 			\Chisel\Settings::DIST_PATH
 		);
+	}
+
+	/**
+	 * Checks if request is in development environment
+	 *
+	 * @return boolean
+	 */
+	public function isDev() {
+		return defined( 'CHISEL_DEV_ENV' );
 	}
 
 	/**

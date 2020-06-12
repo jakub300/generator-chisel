@@ -1,12 +1,22 @@
 module.exports = (api, options) => {
   api.registerCommand('dev', {}, async () => {
-    // api.chainWebpack((webpackConfig) => {
-    //   //
-    // });
+    api.chainWebpack((webpackConfig) => {
+      webpackConfig
+        .plugin('hot-module-replacement')
+        .use(require('webpack/lib/HotModuleReplacementPlugin'));
+
+      const hotPath = require.resolve('webpack-hot-middleware/client');
+      const hotWithQuery = `${hotPath}?reload=true`;
+
+      Object.values(webpackConfig.entryPoints.entries()).forEach((entry) => {
+        entry.prepend(hotWithQuery);
+      });
+    });
 
     const browserSync = require('browser-sync');
     const webpack = require('webpack');
     const webpackDevMiddleware = require('webpack-dev-middleware');
+    const webpackHotMiddleware = require('webpack-hot-middleware');
 
     process.env.NODE_ENV = 'development';
 
@@ -28,6 +38,7 @@ module.exports = (api, options) => {
           publicPath: `/wp-content/themes/${options.wp.themeName}/dist`,
           stats: 'errors-warnings',
         }),
+        webpackHotMiddleware(compiler, { log: false }),
       ],
     };
 

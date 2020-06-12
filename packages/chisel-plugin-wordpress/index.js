@@ -4,6 +4,9 @@ module.exports = (api, options) => {
     const isProd = process.env.NODE_ENV === 'production';
     const outDir = api.service.projectOptions.output.assets;
 
+    // TODO: not working when adding/removing files (on Windows only?)
+    // works after you modify something else
+
     webpackConfig.plugin('wordpress-copy').use(require('copy-webpack-plugin'), [
       {
         patterns: [
@@ -12,6 +15,15 @@ module.exports = (api, options) => {
               api.service.projectOptions.source.base,
               api.service.projectOptions.source.assets
             ),
+            // from: path.posix.join(
+            //   api.service.projectOptions.source.base,
+            //   api.service.projectOptions.source.assets,
+            //   '**/*'
+            // ),
+            // from: path.posix.join(
+            //   api.service.projectOptions.source.base,
+            //   api.service.projectOptions.source.assets
+            // ),
             to: `${outDir}/[path][name].[contenthash:8].[ext]`,
           },
         ],

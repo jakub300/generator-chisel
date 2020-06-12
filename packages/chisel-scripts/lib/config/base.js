@@ -4,7 +4,11 @@ module.exports = (api, options) => {
     const path = require('path');
 
     const isProd = process.env.NODE_ENV === 'production';
-    const { productionSourceMap, productionMinimize = true } = options;
+    const {
+      productionSourceMap,
+      productionMinimize = true,
+      reactHotReload,
+    } = options;
 
     if (isProd) {
       // prettier-ignore
@@ -22,7 +26,6 @@ module.exports = (api, options) => {
     const baseDir = api.resolve(options.source.base);
 
     webpackConfig.context(api.service.context);
-    const scriptEntries = new Set();
 
     (
       await globby([
@@ -35,10 +38,16 @@ module.exports = (api, options) => {
       .forEach((p) => {
         const ext = path.extname(p);
         const base = path.basename(p, ext);
-        const outDir = options.output[ext === '.scss' ? 'styles' : 'scripts'];
+        const isScript = ext !== '.scss';
+        const outDir = options.output[!isScript ? 'styles' : 'scripts'];
         const name = `${outDir}/${base}`;
-        scriptEntries.add(name);
-        webpackConfig.entry(name).add(`./${p}`).end();
+        const entry = webpackConfig.entry(name).add(`./${p}`);
+
+        if (isScript) {
+          if (reactHotReload) {
+            entry.prepend('react-hot-loader/patch');
+          }
+        }
       });
 
     const outScriptsDir = options.output.scripts;
@@ -59,6 +68,12 @@ module.exports = (api, options) => {
         .set('@', api.resolve(options.source.base, options.source.scripts))
         .set('~', api.resolve(options.source.base, options.source.scripts))
         .set('assets', api.resolve(options.source.base, options.source.assets))
+
+    if (reactHotReload) {
+      if (!isProd) {
+        webpackConfig.resolve.alias.set('react-dom', '@hot-loader/react-dom');
+      }
+    }
 
     const fileLoaderOptions = {
       name(p) {
@@ -117,9 +132,7 @@ module.exports = (api, options) => {
 
     webpackConfig
       .plugin('chisel-dynamic-public-path')
-      .use(require('../webpack-plugins/DynamicPublicPath'), [
-        { scriptEntries },
-      ]);
+      .use(require('../webpack-plugins/DynamicPublicPath'));
 
     webpackConfig.plugin('webpackbar').use(require('webpackbar'));
 
