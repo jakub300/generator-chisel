@@ -1,45 +1,64 @@
-// TODO: docs, clear, watch
+// TODO: no minify?
+// TODO: report
 
 module.exports = (api, options) => {
-  api.registerCommand('build', {}, async () => {
-    const path = require('path');
-    const webpack = require('webpack');
-    const chalk = require('chalk');
-    const fs = require('fs-extra');
-    const formatStats = require('./formatStats');
+  api.registerCommand(
+    'build',
+    (command) =>
+      command
+        .description('build for production')
+        .option(
+          '--no-clean',
+          'do not remove the dist directory before building the project'
+        )
+        .option('--watch', 'watch for changes'),
+    async (cmd) => {
+      const path = require('path');
+      const webpack = require('webpack');
+      const chalk = require('chalk');
+      const fs = require('fs-extra');
+      const formatStats = require('./formatStats');
 
-    process.env.NODE_ENV = 'production';
+      process.env.NODE_ENV = 'production';
 
-    return new Promise(async (resolve, reject) => {
-      //
+      if (cmd.clean) {
+        await fs.remove(api.resolve(options.output.base));
+      }
 
-      const config = await api.service.resolveWebpackConfig();
-      const targetDir = api.resolve(options.output.base);
-      // config.watch = true;
+      return new Promise(async (resolve, reject) => {
+        //
 
-      webpack(config, (err, stats) => {
-        if (err) {
-          return reject(err);
-        }
+        const config = await api.service.resolveWebpackConfig();
+        const targetDir = api.resolve(options.output.base);
+        config.watch = Boolean(cmd.watch);
 
-        const info = stats.toJson();
+        webpack(config, (err, stats) => {
+          if (err) {
+            return reject(err);
+          }
 
-        if (stats.hasErrors()) {
-          console.log(stats.toString({ colors: chalk.supportsColor.hasBasic }));
-          return reject(`Build failed with errors.`);
-        }
+          const info = stats.toJson();
 
-        if (stats.hasWarnings()) {
-          console.warn(info.warnings);
-        }
+          if (stats.hasErrors()) {
+            console.log(
+              stats.toString({ colors: chalk.supportsColor.hasBasic })
+            );
+            return reject(`Build failed with errors.`);
+          }
 
-        const targetDirShort = path.relative(api.service.context, targetDir);
-        const assetsDir = `${options.output.assets}/`;
-        console.log();
-        console.log(formatStats(stats, targetDirShort, assetsDir, api));
+          if (stats.hasWarnings()) {
+            console.warn(info.warnings);
+          }
 
-        resolve();
+          const targetDirShort = path.relative(api.service.context, targetDir);
+          const assetsDir = `${options.output.assets}/`;
+          console.log();
+          console.log(formatStats(stats, targetDirShort, assetsDir, api));
+
+
+          resolve();
+        });
       });
-    });
-  });
+    }
+  );
 };

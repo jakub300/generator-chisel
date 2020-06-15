@@ -22,6 +22,7 @@
     "autoprefixer": "^9.8.0",
     <% /* required by postcss-normalize for some reason  */ %>
     "browserslist": "^4.12.0",
+    "chisel-plugin-code-style": "*",
     "chisel-scripts": "*"
   },
   "dependencies": {

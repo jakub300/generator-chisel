@@ -10,11 +10,10 @@ module.exports.copy = async function copy(options = {}) {
     expandDirectories = true,
     dot = true,
     from: basePath = process.cwd(),
-    file = ['.'],
     to = process.cwd(),
     templateData = {},
   } = options;
-  // let { base = 'template' } = options;
+  let { file = ['.'] } = options;
 
   if (!Array.isArray(file)) file = [file];
   const basePathPosix = slash(basePath);

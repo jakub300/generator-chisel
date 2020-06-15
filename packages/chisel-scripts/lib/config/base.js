@@ -7,7 +7,7 @@ module.exports = (api, options) => {
     const {
       productionSourceMap,
       productionMinimize = true,
-      reactHotReload,
+      react,
     } = options;
 
     if (isProd) {
@@ -44,7 +44,7 @@ module.exports = (api, options) => {
         const entry = webpackConfig.entry(name).add(`./${p}`);
 
         if (isScript) {
-          if (reactHotReload) {
+          if (react) {
             entry.prepend('react-hot-loader/patch');
           }
         }
@@ -69,7 +69,7 @@ module.exports = (api, options) => {
         .set('~', api.resolve(options.source.base, options.source.scripts))
         .set('assets', api.resolve(options.source.base, options.source.assets))
 
-    if (reactHotReload) {
+    if (react) {
       if (!isProd) {
         webpackConfig.resolve.alias.set('react-dom', '@hot-loader/react-dom');
       }

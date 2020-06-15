@@ -113,9 +113,12 @@ module.exports = (api) => {
   });
 
   api.schedule(api.PRIORITIES.WP_INSTALL, async () => {
-    if (api.creator.cmd.skipWpInstall) return;
-
     const { wp: wpData } = api.creator.data;
+
+    if (api.creator.cmd.skipWpInstall) {
+      delete wpData.adminPassword;
+      return;
+    }
 
     await wp([
       'core',

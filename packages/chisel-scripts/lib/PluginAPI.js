@@ -2,31 +2,34 @@ const path = require('path');
 
 // Based on https://github.com/vuejs/vue-cli/blob/80b93951b1710733a66765cbd535b12b7bb59279/packages/%40vue/cli-service/lib/PluginAPI.js
 
-module.exports =class PluginAPI {
-  constructor (id, service) {
-    this.id = id
-    this.service = service
+module.exports = class PluginAPI {
+  constructor(id, service) {
+    this.id = id;
+    /** @type import('./Service') */
+    this.service = service;
   }
 
   /**
-   * Register a command that will become available as `vue-cli-service [name]`.
+   * Register a command that will become available as `chisel-scripts [name]`.
    *
    * @param {string} name
    * @param {object} [opts]
-   *   {
-   *     description: string,
-   *     usage: string,
-   *     options: { [string]: string }
-   *   }
    * @param {function} fn
    *   (args: { [string]: string }, rawArgs: string[]) => ?Promise
    */
-  registerCommand (name, opts, fn) {
-    if (typeof opts === 'function') {
-      fn = opts
-      opts = null
+  registerCommand(name, opts, fn) {
+    if (!fn) {
+      fn = opts;
+      opts = null;
     }
-    this.service.commands[name] = { fn, opts: opts || {}}
+
+    const command = this.service.program.command(name);
+
+    command.action(fn);
+
+    if (opts) {
+      opts(command);
+    }
   }
 
   /**
@@ -36,8 +39,8 @@ module.exports =class PluginAPI {
    *
    * @param {function} fn
    */
-  chainWebpack (fn) {
-    this.service.webpackChainFns.push(fn)
+  chainWebpack(fn) {
+    this.service.webpackChainFns.push(fn);
   }
 
   /**
@@ -50,8 +53,8 @@ module.exports =class PluginAPI {
    *
    * @param {object | function} fn
    */
-  configureWebpack (fn) {
-    this.service.webpackRawConfigFns.push(fn)
+  configureWebpack(fn) {
+    this.service.webpackRawConfigFns.push(fn);
   }
 
   /**
@@ -60,7 +63,7 @@ module.exports =class PluginAPI {
    * @param {string} _path - Relative path from project root
    * @return {string} The resolved absolute path.
    */
-  resolve (..._path) {
-    return path.resolve(this.service.context, ..._path.filter(Boolean))
+  resolve(..._path) {
+    return path.resolve(this.service.context, ..._path.filter(Boolean));
   }
-}
+};

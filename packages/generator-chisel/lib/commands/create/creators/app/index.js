@@ -86,4 +86,8 @@ module.exports = async (api) => {
   api.schedule(api.PRIORITIES.INSTALL_DEPENDENCIES, () => {
     return installDependencies();
   });
+
+  api.schedule(api.PRIORITIES.COPY_SECOND, async () => {
+    await api.copy({ file: 'chisel.config.chisel-tpl.js' });
+  });
 };

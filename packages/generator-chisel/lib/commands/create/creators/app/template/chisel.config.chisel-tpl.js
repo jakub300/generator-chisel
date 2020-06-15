@@ -21,16 +21,15 @@ module.exports = {
     base: \`\${wp.directoryName}/wp-content/themes/\${wp.themeName}/dist\`
   },` %>
 
-  // To use hot reload for react components:
-  // 1. yarn add react-hot-loader @hot-loader/react-dom
-  // 2. Uncomment react preset in babel.config.js
+  // To use React and hot reload for react components:
+  // 1. Run `yarn add react-hot-loader @hot-loader/react-dom`
   // 3. Mark your root component as hot-exported as described on
   //    https://github.com/gaearon/react-hot-loader
   // 4. Uncomment line below
-  // reactHotReload: true,
+  // react: true,
 
   plugins: [
+    'chisel-plugin-code-style',
     <%= isWP ? "'chisel-plugin-wordpress'," : '' %>
-
   ]
 }

@@ -33,6 +33,7 @@
     "chalk": "^4.0.0",
     "cli-highlight": "^2.1.4",
     "cliui": "^6.0.0",
+    "commander": "^5.1.0",
     "css-loader": "^3.5.3",
     "fibers": "^5.0.0",
     "file-loader": "^6.0.0",

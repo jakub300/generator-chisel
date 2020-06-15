@@ -1,3 +1,5 @@
+// TODO: minify styles
+
 const path = require('path');
 const isGlob = require('is-glob');
 
@@ -22,6 +24,7 @@ module.exports = (api, options) => {
         outputStyle: 'expanded', //  TODO: test postcss and add minifier
         importer(url, prev, done) {
           (async () => {
+            // TODO: globby.hasMagic
             if (isGlob(url)) {
               const files = (
                 await globby(url, { cwd: path.dirname(prev) })
