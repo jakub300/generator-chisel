@@ -2,7 +2,8 @@ const path = require('path');
 const { startCase } = require('lodash');
 const execa = require('execa');
 const speakingUrl = require('speakingurl');
-const { runLocal, installDependencies } = require('chisel-shared-utils');
+const { run, runLocal, installDependencies } = require('chisel-shared-utils');
+const packagesVersions = require('../../packages-versions');
 
 module.exports = async (api) => {
   const runLocalCurrent = (args, opts) =>
@@ -76,17 +77,51 @@ module.exports = async (api) => {
     // app.nameCamel = camelCase(app.nameSlug);
     app.hasJQuery = false;
 
-    if (projectType == 'wp-with-fe') {
+    if (projectType === 'wp-with-fe') {
       await api.creator.loadCreator('wp');
     }
   });
 
+  let installedPackages;
   api.schedule(api.PRIORITIES.COPY, async () => {
     await api.copy();
+
+    const { link } = api.creator.cmd;
+
+    const modifyDependencies = (deps) => {
+      Object.keys(deps).forEach((dep) => {
+        if (!packagesVersions[dep]) return;
+        deps[dep] = link ? 'link:*' : `^${packagesVersions[dep]}`;
+      });
+    };
+
+    await api.modifyFile('package.json', (body) => {
+      installedPackages = [
+        ...Object.keys(body.dependencies),
+        ...Object.keys(body.devDependencies),
+      ];
+
+      modifyDependencies(body.dependencies);
+      modifyDependencies(body.devDependencies);
+    });
   });
 
-  api.schedule(api.PRIORITIES.INSTALL_DEPENDENCIES, () => {
-    return installDependencies({ cwd: api.resolve() });
+  api.schedule(api.PRIORITIES.INSTALL_DEPENDENCIES, async () => {
+    await installDependencies({ cwd: api.resolve() });
+
+    if (api.creator.cmd.link) {
+      const availablePackages = Object.keys(packagesVersions);
+      const installedAndAvailable = installedPackages.filter((pkg) =>
+        availablePackages.includes(pkg),
+      );
+
+      for (const pkg of installedAndAvailable) {
+        console.log(`Running yarn link ${pkg}...`);
+        await run(['yarn', 'link', pkg], { cwd: api.resolve() });
+      }
+
+      console.log(`Linking done`);
+    }
   });
 
   api.schedule(api.PRIORITIES.COPY_SECOND, async () => {

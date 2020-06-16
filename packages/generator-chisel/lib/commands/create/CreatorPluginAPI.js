@@ -1,8 +1,8 @@
-const PRIORITIES = require('./priorities');
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
 const { merge, camelCase } = require('lodash');
+const PRIORITIES = require('./priorities');
 
 module.exports = class CreatorPluginAPI {
   constructor(id, creator) {
@@ -35,7 +35,7 @@ module.exports = class CreatorPluginAPI {
 
     const answers = await inquirer.prompt(
       questionsNormalized,
-      this.creator.data
+      this.creator.data,
     );
 
     merge(this.creator.data, answers);
@@ -57,7 +57,7 @@ module.exports = class CreatorPluginAPI {
         __dirname,
         'creators',
         this.id,
-        options.from || 'template'
+        options.from || 'template',
       ),
       to: this.resolve(options.to),
       templateData: {
@@ -89,7 +89,7 @@ module.exports = class CreatorPluginAPI {
     const packageJsonPath = this.resolve('package.json');
 
     if (filePath === packageJsonPath) {
-      //
+      modified = JSON.stringify(modified);
     } else if (isJson && typeof modified === 'object') {
       modified = JSON.stringify(modified);
     }

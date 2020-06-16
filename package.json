@@ -5,7 +5,16 @@
     "packages/*",
     "test-projects/*"
   ],
+  "scripts": {
+    "version": "node scripts/index-versions.js",
+    "prepare-links": "node scripts/prepare-links.js"
+  },
   "devDependencies": {
-    "lerna": "^3.22.0"
+    "eslint": "^7.2.0",
+    "eslint-config-chisel": "*",
+    "execa": "^4.0.2",
+    "globby": "^11.0.1",
+    "lerna": "^3.22.0",
+    "prettier": "^2.0.5"
   }
 }

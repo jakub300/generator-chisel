@@ -31,7 +31,7 @@ module.exports = (api) => {
       {
         name: 'url',
         message: 'Enter URL:',
-        default: 'http://' + api.creator.data.app.nameSlug + '.test/',
+        default: `http://${api.creator.data.app.nameSlug}.test/`,
       },
       {
         name: 'adminUser',
@@ -76,13 +76,12 @@ module.exports = (api) => {
       // },
     ]);
 
-    api.creator.data.wp.tablePrefix =
-      crypto
-        .randomBytes(32)
-        .toString('base64')
-        .replace(/[+/=]/g, '')
-        .substr(0, 8)
-        .toLowerCase() + '_';
+    api.creator.data.wp.tablePrefix = `${crypto
+      .randomBytes(32)
+      .toString('base64')
+      .replace(/[+/=]/g, '')
+      .substr(0, 8)
+      .toLowerCase()}_`;
   });
 
   api.schedule(api.PRIORITIES.COPY, async () => {
@@ -91,7 +90,7 @@ module.exports = (api) => {
     await fs.move(
       api.resolve('src/templates'),
       api.resolve(wpDist, '../templates'),
-      { overwrite: true }
+      { overwrite: true },
     );
 
     await api.copy(); // template directory
@@ -101,8 +100,8 @@ module.exports = (api) => {
       body
         .replace('wp_', tablePrefix)
         .replace(/put your unique phrase here/g, () =>
-          crypto.randomBytes(30).toString('base64')
-        )
+          crypto.randomBytes(30).toString('base64'),
+        ),
     );
     await api.copy({ from: 'chisel-starter-theme', to: `${wpDist}/..` });
   });
@@ -153,7 +152,7 @@ module.exports = (api) => {
   });
 
   api.schedule(api.PRIORITIES.WP_THEME_ACTIVATE, async () => {
-    const themeName = require(api.resolve('chisel.config.js')).wp.themeName;
+    const { themeName } = require(api.resolve('chisel.config.js')).wp;
     await wp(['theme', 'activate', themeName]);
   });
 
