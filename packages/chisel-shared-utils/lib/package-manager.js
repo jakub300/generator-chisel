@@ -9,10 +9,10 @@ function hasYarn() {
 
 module.exports.hasYarn = hasYarn;
 
-function installDependencies() {
+function installDependencies(opts = {}) {
   const execa = require('execa');
 
-  return execa(hasYarn() ? 'yarn' : 'npm', ['install'], { stdio: 'inherit' });
+  return execa(hasYarn() ? 'yarn' : 'npm', ['install'], { stdio: 'inherit', ...opts });
 }
 
 module.exports.installDependencies = installDependencies;

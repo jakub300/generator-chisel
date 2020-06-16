@@ -126,23 +126,17 @@ module.exports = (api, options) => {
 
         const resultObject = await stylelint.lint(config);
 
-        const errorCount = [resultObject]
-          .filter((res) => res.results.length)
-          .reduce(
-            (sum, res) =>
-              sum + res.results[0].warnings.filter(isErrorSeverity).length,
-            0
-          );
-
-        if (errorCount > 0) {
-          exit = 0;
+        if (resultObject.errored) {
+          exit = 1;
         } else {
-          if (resultObject.results.length === 0) {
+          if (!resultObject.output) {
             console.log(`No SCSS lint issues found OR all issues auto-fixed.`);
           }
         }
 
-        console.log(resultObject.output);
+        if (resultObject.output) {
+          console.log(resultObject.output);
+        }
       }
 
       process.exit(exit);

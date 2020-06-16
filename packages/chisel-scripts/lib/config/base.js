@@ -5,16 +5,15 @@ module.exports = (api, options) => {
 
     const isProd = process.env.NODE_ENV === 'production';
     const {
-      productionSourceMap,
+      productionSourceMap = true,
       productionMinimize = true,
       react,
     } = options;
 
     if (isProd) {
-      // prettier-ignore
       webpackConfig
         .mode('production')
-        .devtool(options.productionSourceMap !== false && productionSourceMap ? 'source-map' : false)
+        .devtool(productionSourceMap ? 'source-map' : false);
 
       if (!productionMinimize) {
         webpackConfig.optimization.minimize(false);
@@ -68,6 +67,7 @@ module.exports = (api, options) => {
         .set('@', api.resolve(options.source.base, options.source.scripts))
         .set('~', api.resolve(options.source.base, options.source.scripts))
         .set('assets', api.resolve(options.source.base, options.source.assets))
+        .set('~assets', api.resolve(options.source.base, options.source.assets));
 
     if (react) {
       if (!isProd) {
@@ -160,6 +160,12 @@ module.exports = (api, options) => {
         .use(require('webpack/lib/HashedModuleIdsPlugin'), [
           { hashDigest: 'hex' },
         ]);
+
+      if (productionMinimize) {
+        webpackConfig
+          .plugin('unminified-webpack-plugin')
+          .use(require('unminified-webpack-plugin'), [{ postfix: 'full' }]);
+      }
     }
   });
 };

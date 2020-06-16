@@ -10,10 +10,10 @@
   "scripts": {
     "dev": "chisel-scripts dev",
     "watch": "chisel-scripts dev",
-    "build": "chisel-scripts build",
+    "build": "chisel-scripts lint && chisel-scripts build",
     "build-report": "TODO",
     <%= app.projectType == 'wp-with-fe' && `"wp": "chisel-scripts wp",` %>
-    "lint": "TODO chisel-scripts lint"
+    "lint": "chisel-scripts lint"
   },
   "devDependencies": {
     <%= app.projectType == 'wp-with-fe' && `"chisel-plugin-wordpress": "*",` %>

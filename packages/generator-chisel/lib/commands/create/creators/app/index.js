@@ -2,10 +2,12 @@ const path = require('path');
 const { startCase } = require('lodash');
 const execa = require('execa');
 const speakingUrl = require('speakingurl');
-const { installDependencies } = require('chisel-shared-utils');
+const { runLocal, installDependencies } = require('chisel-shared-utils');
 
 module.exports = async (api) => {
-  // await
+  const runLocalCurrent = (args, opts) =>
+    runLocal(args, { ...opts, cwd: api.resolve() });
+
   api.schedule(api.PRIORITIES.ASK, async () => {
     // TODO: project exisits
 
@@ -84,10 +86,24 @@ module.exports = async (api) => {
   });
 
   api.schedule(api.PRIORITIES.INSTALL_DEPENDENCIES, () => {
-    return installDependencies();
+    return installDependencies({ cwd: api.resolve() });
   });
 
   api.schedule(api.PRIORITIES.COPY_SECOND, async () => {
     await api.copy({ file: 'chisel.config.chisel-tpl.js' });
   });
+
+  api.schedule(api.PRIORITIES.FORMAT, async () => {
+    console.log('Formatting code...');
+    await runLocalCurrent(['lint'], { silent: true });
+  });
+
+  api.schedule(api.PRIORITIES.BUILD, async () => {
+    console.log('Linting and building...');
+    await runLocalCurrent(['build']);
+  });
+
+  // api.schedule(api.PRIORITIES.END_MESSAGE, async () => {
+  //   console.log('')
+  // });
 };

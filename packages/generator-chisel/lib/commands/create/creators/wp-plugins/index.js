@@ -19,13 +19,16 @@ module.exports = (api) => {
     const { plugins: selectedPlugins } = api.creator.data.wpPlugins;
     if (selectedPlugins.length === 0) return;
 
-    return runLocal([
-      'chisel-scripts',
-      'wp',
-      'plugin',
-      'install',
-      { activate: true },
-      ...selectedPlugins.map((name) => plugins.plugins[name]),
-    ]);
+    return runLocal(
+      [
+        'chisel-scripts',
+        'wp',
+        'plugin',
+        'install',
+        { activate: true },
+        ...selectedPlugins.map((name) => plugins.plugins[name]),
+      ],
+      { cwd: api.resolve() }
+    );
   });
 };

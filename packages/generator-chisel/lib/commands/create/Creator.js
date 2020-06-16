@@ -4,7 +4,9 @@ const CreatorPluginAPI = require('./CreatorPluginAPI');
 
 module.exports = class Creator {
   constructor(context, opts) {
-    this.data = {};
+    this.data = {
+      chiselVersion: require('../../../package.json').version,
+    };
     this.queue = new TinyQueue(
       [],
       (a, b) => a.priority - b.priority || a.index - b.index

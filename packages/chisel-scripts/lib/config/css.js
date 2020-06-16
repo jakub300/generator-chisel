@@ -9,12 +9,7 @@ module.exports = (api, options) => {
     const path = require('path');
 
     const isProd = process.env.NODE_ENV === 'production';
-    const { productionSourceMap } = api.service;
-
-    const sourceMap = Boolean(
-      !isProd ||
-        (isProd && options.productionSourceMap !== false && productionSourceMap)
-    );
+    const sourceMap = true;
 
     const sassLoaderOptions = {
       sourceMap,
@@ -75,6 +70,10 @@ module.exports = (api, options) => {
           .loader(require.resolve('css-loader'))
           .options(cssLoaderOptions)
           .end()
+        .use('postcss-loader')
+          .loader(require.resolve('postcss-loader'))
+          .options(postCssLoaderOptions)
+          .end()
     };
 
     createCssLoader('css', /\.css$/);
@@ -90,6 +89,12 @@ module.exports = (api, options) => {
       .plugin('extract-css')
       .use(require('mini-css-extract-plugin'), [
         { filename: `[name]${isProd ? '.[contenthash:8]' : ''}.css` },
+      ]);
+
+    webpackConfig.optimization
+      .minimizer('css')
+      .use(require.resolve('../webpack-plugins/OptimizeCssnanoPlugin'), [
+        { sourceMap: true },
       ]);
 
     if (isProd) {

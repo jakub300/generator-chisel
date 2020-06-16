@@ -3,12 +3,19 @@ const crypto = require('crypto');
 const execa = require('execa');
 const fs = require('fs-extra');
 
-const wp = (args, opts) => runLocal(['chisel-scripts', 'wp', ...args], opts);
-
-const gitConfig = (field) =>
-  execa('git', ['config', field], { timeout: 2000 }).catch(() => ({}));
-
 module.exports = (api) => {
+  const wp = (args, opts) =>
+    runLocal(['chisel-scripts', 'wp', ...args], {
+      ...opts,
+      cwd: api.resolve(),
+    });
+
+  const gitConfig = (field) =>
+    execa('git', ['config', field], {
+      timeout: 2000,
+      cwd: api.resolve(),
+    }).catch(() => ({}));
+
   api.schedule(api.PRIORITIES.ASK, async () => {
     await api.creator.loadCreator('wp-plugins');
 
@@ -109,7 +116,7 @@ module.exports = (api) => {
   api.schedule(api.PRIORITIES.WP_CONFIG, async () => {
     if (api.creator.cmd.skipWpConfig) return;
 
-    await runLocal(['chisel-scripts', 'wp-config']);
+    await runLocal(['chisel-scripts', 'wp-config'], { cwd: api.resolve() });
   });
 
   api.schedule(api.PRIORITIES.WP_INSTALL, async () => {

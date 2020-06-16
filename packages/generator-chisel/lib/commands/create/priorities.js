@@ -24,4 +24,6 @@ module.exports = {
   FORMAT: 2500,
 
   BUILD: 3000,
+
+  END_MESSAGE: 5000,
 };
