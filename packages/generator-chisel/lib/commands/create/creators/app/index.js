@@ -82,16 +82,17 @@ module.exports = async (api) => {
     }
   });
 
+  // For linking we need to first install packages from npm registry and then
+  // link local ones, if we don't do this yarn won't create proper entries in
+  // node_modules/.bin and chisel-scripts command won't work
   let installedPackages;
   api.schedule(api.PRIORITIES.COPY, async () => {
     await api.copy();
 
-    const { link } = api.creator.cmd;
-
     const modifyDependencies = (deps) => {
       Object.keys(deps).forEach((dep) => {
         if (!packagesVersions[dep]) return;
-        deps[dep] = link ? 'link:*' : `^${packagesVersions[dep]}`;
+        deps[dep] = `^${packagesVersions[dep]}`;
       });
     };
 
