@@ -79,7 +79,7 @@ module.exports = (api, options) => {
       name(p) {
         const relative = path.relative(
           path.join(baseDir, options.source.assets),
-          path.dirname(p)
+          path.dirname(p),
         );
 
         if (!relative) {
@@ -148,9 +148,9 @@ module.exports = (api, options) => {
 
             const hash = require('hash-sum');
             const joinedHash = hash(
-              Array.from(chunk.modulesIterable, (m) => m.id).join('_')
+              Array.from(chunk.modulesIterable, (m) => m.id).join('_'),
             );
-            return `chunk-` + joinedHash;
+            return `chunk-${joinedHash}`;
           },
         ]);
 

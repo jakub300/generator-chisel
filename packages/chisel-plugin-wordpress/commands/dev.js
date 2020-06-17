@@ -3,6 +3,8 @@ module.exports = (api, options) => {
     'dev',
     (command) => command.description('start development server'),
     async () => {
+      const fs = require('fs-extra');
+
       api.chainWebpack((webpackConfig) => {
         webpackConfig
           .plugin('hot-module-replacement')
@@ -27,6 +29,15 @@ module.exports = (api, options) => {
       const compiler = webpack(config);
       const bs = browserSync.create();
 
+      const { directoryName, themeName } = options.wp;
+
+      const devMiddleware = webpackDevMiddleware(compiler, {
+        publicPath: `/wp-content/themes/${themeName}/dist`,
+        stats: 'errors-warnings',
+      });
+
+      const hotMiddleware = webpackHotMiddleware(compiler, { log: false });
+
       const browserSyncConfig = {
         proxy: {
           target: options.wp.url,
@@ -36,16 +47,58 @@ module.exports = (api, options) => {
         },
         ghostMode: false,
         online: true,
-        middleware: [
-          webpackDevMiddleware(compiler, {
-            publicPath: `/wp-content/themes/${options.wp.themeName}/dist`,
-            stats: 'errors-warnings',
-          }),
-          webpackHotMiddleware(compiler, { log: false }),
-        ],
+        middleware: [devMiddleware, hotMiddleware],
       };
 
+      await new Promise((resolve) => {
+        devMiddleware.context.compiler.hooks.done.tap(
+          'chisel-plugin-webpack',
+          resolve,
+        );
+      });
+
       bs.init(browserSyncConfig);
-    }
+
+      const devManifestPath = api.resolve(
+        options.output.base,
+        'manifest-dev.json',
+      );
+
+      let watchReady = false;
+      let fileManifestBody = '';
+      const watcher = bs.watch(
+        api.resolve(directoryName, 'wp-content/themes', themeName),
+        (ev, file) => {
+          // save initial content of manifest file
+          if (!fileManifestBody && file === devManifestPath) {
+            fs.readFile(file, { encoding: 'utf8' }).then((content) => {
+              fileManifestBody = content;
+            });
+          }
+
+          // don't reload before initialized
+          if (!watchReady) return;
+
+          // reload on changes in php and twig files
+          if (file.endsWith('.php') || file.endsWith('.twig')) {
+            bs.reload();
+          }
+
+          // detect changes in manifest (so changes in assets) and reload
+          if (fileManifestBody && file === devManifestPath) {
+            fs.readFile(file, { encoding: 'utf8' }).then((content) => {
+              if (content !== fileManifestBody) {
+                fileManifestBody = content;
+                bs.reload();
+              }
+            });
+          }
+        },
+      );
+
+      watcher.on('ready', () => {
+        watchReady = true;
+      });
+    },
   );
 };
