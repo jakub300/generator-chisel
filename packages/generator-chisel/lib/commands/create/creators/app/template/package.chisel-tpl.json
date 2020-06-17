@@ -5,6 +5,7 @@
   "name": "<%= app.nameSlug %>",
   "version": "0.0.0",
   "private": true,
+  "license": "UNLICENSED",
   "author": "<%= app.author %>",
   "description": "<%= app.name %>",
   "scripts": {

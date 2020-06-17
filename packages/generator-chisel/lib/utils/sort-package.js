@@ -1,10 +1,14 @@
+// Based on:
+// * https://github.com/vuejs/vue-cli/blob/1a0b59142aa8797810ca90705290d960a4ee6d1e/packages/%40vue/cli/lib/Generator.js#L225
+// * https://github.com/vuejs/vue-cli/blob/1a0b59142aa8797810ca90705290d960a4ee6d1e/packages/%40vue/cli/lib/util/sortObject.js
+
 function sortObject(obj, keyOrder, dontSortByUnicode) {
-  if (!obj) return;
+  if (!obj) return undefined;
   const res = {};
 
   if (keyOrder) {
     keyOrder.forEach((key) => {
-      if (obj.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
         res[key] = obj[key];
         delete obj[key];
       }
@@ -13,7 +17,7 @@ function sortObject(obj, keyOrder, dontSortByUnicode) {
 
   const keys = Object.keys(obj);
 
-  !dontSortByUnicode && keys.sort();
+  if (!dontSortByUnicode) keys.sort();
   keys.forEach((key) => {
     res[key] = obj[key];
   });
@@ -22,19 +26,17 @@ function sortObject(obj, keyOrder, dontSortByUnicode) {
 }
 
 module.exports = function sortPackage(pkg) {
-  // TODO: cleanup names
-
-  pkg.dependencies = sortObject(this.pkg.dependencies);
-  pkg.devDependencies = sortObject(this.pkg.devDependencies);
-  pkg.scripts = sortObject(this.pkg.scripts, [
-    'serve',
+  pkg.dependencies = sortObject(pkg.dependencies);
+  pkg.devDependencies = sortObject(pkg.devDependencies);
+  pkg.scripts = sortObject(pkg.scripts, [
+    'dev',
+    'watch',
     'build',
-    'test:unit',
-    'test:e2e',
+    'build-report',
     'lint',
-    'deploy',
+    'wp',
   ]);
-  pkg = sortObject(this.pkg, [
+  pkg = sortObject(pkg, [
     'name',
     'version',
     'private',
@@ -50,6 +52,7 @@ module.exports = function sortPackage(pkg) {
     'dependencies',
     'devDependencies',
     'peerDependencies',
+    'engines',
     'vue',
     'babel',
     'eslintConfig',

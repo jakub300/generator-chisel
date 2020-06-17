@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const { merge, camelCase } = require('lodash');
 const PRIORITIES = require('./priorities');
+const sortPackage = require('../../utils/sort-package');
 
 module.exports = class CreatorPluginAPI {
   constructor(id, creator) {
@@ -89,7 +90,8 @@ module.exports = class CreatorPluginAPI {
     const packageJsonPath = this.resolve('package.json');
 
     if (filePath === packageJsonPath) {
-      modified = JSON.stringify(modified);
+      modified = sortPackage(modified);
+      modified = `${JSON.stringify(modified, null, 2)}\n`;
     } else if (isJson && typeof modified === 'object') {
       modified = JSON.stringify(modified);
     }
