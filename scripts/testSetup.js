@@ -166,12 +166,13 @@ global.chiselTestHelpers = {
     });
 
     if (consoleMock.mock.calls[1] && consoleMock.mock.calls[1][0]) {
-      // in Ci in Node 12 there is difference in gzip compression
-      // ex. https://travis-ci.org/github/xfiveco/generator-chisel/jobs/712710842
+      // in Ci in Node 12 and 14 there is difference in gzip compression
+      // ex. https://travis-ci.com/github/jakub300/generator-chisel/jobs/519521043
+      // and https://travis-ci.com/github/jakub300/generator-chisel/jobs/519521042
       if (parseInt(process.versions.node.split('.')[0], 10) >= '12') {
         consoleMock.mock.calls[1][0] = consoleMock.mock.calls[1][0].replace(
-          '4.78 KiB',
-          '4.79 KiB',
+          '4.86 KiB', // on Node 10
+          '4.85 KiB', // on Node 12 and 14
         );
       }
     }
